@@ -44,21 +44,23 @@ export default function StoryGeneratorPage() {
 
   const loadStories = async () => {
     try {
+      console.log('Loading stories from Supabase...')
       const { data: stories, error } = await supabase
         .from('stories')
         .select('*')
         .order('created_at', { ascending: false })
       
       if (error) {
-        console.error('Error loading stories:', error)
-        setError('Fehler beim Laden der Geschichten')
+        console.error('Supabase error loading stories:', error)
+        setError(`Fehler beim Laden der Geschichten: ${error.message}`)
         return
       }
       
+      console.log('Loaded stories:', stories)
       setGenerations(stories || [])
     } catch (err) {
       console.error('Error loading stories:', err)
-      setError('Fehler beim Laden der Geschichten')
+      setError(`Fehler beim Laden der Geschichten: ${err instanceof Error ? err.message : 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
