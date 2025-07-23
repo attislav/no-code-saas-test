@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+// Create server-side Supabase client with explicit values
+const supabase = createClient(
+  'https://cngwfskwxtafyizccbtm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuZ3dmc2t3eHRhZnlpemNjYnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzMDQzNDgsImV4cCI6MjA2ODg4MDM0OH0.mgYRg7kzc9i2kzLM2kZaL2pcRBeKObLfu-JL7ShoDyo'
+)
 
 interface GenerateStoryRequest {
   character: string
