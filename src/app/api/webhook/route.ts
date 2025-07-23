@@ -26,19 +26,13 @@ const storyStorage = new Map<string, StoryCompleteRequest>()
 
 export async function POST(request: NextRequest) {
   try {
-    // Check API key authorization via header OR query parameter (fallback for Vercel SSO issues)
-    const authHeader = request.headers.get('authorization')
+    // Check API key authorization via query parameter (works around Vercel SSO)
     const { searchParams } = new URL(request.url)
-    const queryApiKey = searchParams.get('api_key')
+    const queryApiKey = searchParams.get('key')
     const expectedApiKey = process.env.WEBHOOK_API_KEY
     
-    const isAuthorized = expectedApiKey && (
-      (authHeader && authHeader === `Bearer ${expectedApiKey}`) ||
-      (queryApiKey && queryApiKey === expectedApiKey)
-    )
-    
-    if (!isAuthorized) {
-      console.error('Unauthorized webhook access attempt')
+    if (!expectedApiKey || queryApiKey !== expectedApiKey) {
+      console.error('Unauthorized webhook access attempt', { providedKey: queryApiKey })
       const response = NextResponse.json(
         { error: 'Unauthorized - Invalid API key' },
         { status: 401 }
