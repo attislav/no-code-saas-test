@@ -2,8 +2,8 @@ import { NavigationItem, PricingPlan, Feature, FeatureCategory } from './types';
 import { SubscriptionTier } from './types';
 
 // App Constants
-export const APP_NAME = 'SaaSify';
-export const APP_DESCRIPTION = 'SaaS schneller bauen';
+export const APP_NAME = 'StoryMagic';
+export const APP_DESCRIPTION = 'Magische Kindergeschichten mit KI';
 export const APP_URL = 'https://saasify.com';
 export const APP_VERSION = '1.0.0';
 

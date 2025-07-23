@@ -19,6 +19,7 @@ export function Header({ className }: HeaderProps) {
 
   const navigation = [
     { name: "Features", href: "/features" },
+    { name: "Video Generator", href: "/video-generator" },
     { name: "Pricing", href: "/pricing" },
     { name: "Documentation", href: "/docs" },
     { name: "Support", href: "/support" },

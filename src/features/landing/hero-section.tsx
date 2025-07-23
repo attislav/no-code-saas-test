@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, CheckCircle, Star } from "lucide-react"
+import { ArrowRight, CheckCircle, BookOpen } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { APP_DESCRIPTION } from "@/lib/constants"
@@ -15,8 +15,8 @@ export function HeroSection() {
         <div className="mx-auto max-w-4xl text-center">
           {/* Badge */}
           <div className="inline-flex items-center rounded-full border bg-background px-4 py-2 text-sm font-medium shadow-sm mb-8">
-            <Star className="mr-2 h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span>Vertraut von über 10.000+ Entwicklern</span>
+            <BookOpen className="mr-2 h-4 w-4 text-primary" />
+            <span>Bereits über 1.000+ Geschichten erstellt</span>
           </div>
 
           {/* Main Headline */}
@@ -26,21 +26,21 @@ export function HeroSection() {
           
           {/* Subtitle */}
           <p className="mt-6 text-lg leading-8 text-muted-foreground sm:text-xl max-w-2xl mx-auto">
-            Bauen Sie Ihre SaaS-Anwendung in Rekordzeit. Mit unserer modernen Plattform 
-            erhalten Sie alles, was Sie für den Start und Wachstum benötigen.
+            Erstellen Sie personalisierte Kindergeschichten mit künstlicher Intelligenz. 
+            Einzigartige Geschichten für jedes Kind, angepasst an Alter und Interessen.
           </p>
 
           {/* CTA Buttons */}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Button size="lg" asChild className="text-base px-8 py-6">
-              <Link href="/register">
-                Kostenlos starten
+              <Link href="/story-generator">
+                Geschichte erstellen
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild className="text-base px-8 py-6">
-              <Link href="/demo">
-                Demo ansehen
+              <Link href="/pricing">
+                Preise ansehen
               </Link>
             </Button>
           </div>
@@ -49,30 +49,37 @@ export function HeroSection() {
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>14 Tage kostenlos testen</span>
+              <span>Kostenlose Testgeschichte</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Keine Kreditkarte erforderlich</span>
+              <span>Altersgerechte Inhalte</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Jederzeit kündbar</span>
+              <span>Pädagogisch wertvoll</span>
             </div>
           </div>
 
           {/* Trust Indicators */}
           <div className="mt-16">
             <p className="text-sm text-muted-foreground mb-6">
-              Vertraut von führenden Unternehmen
+              Vertraut von Eltern und Kindern
             </p>
             <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
-              {/* Placeholder logos - replace with actual company logos */}
-              <div className="h-8 w-24 bg-muted rounded animate-pulse" />
-              <div className="h-8 w-20 bg-muted rounded animate-pulse" />
-              <div className="h-8 w-28 bg-muted rounded animate-pulse" />
-              <div className="h-8 w-16 bg-muted rounded animate-pulse" />
-              <div className="h-8 w-22 bg-muted rounded animate-pulse" />
+              {/* Placeholder for family testimonials */}
+              <div className="text-center">
+                <div className="h-12 w-12 bg-muted rounded-full mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">Familie Schmidt</p>
+              </div>
+              <div className="text-center">
+                <div className="h-12 w-12 bg-muted rounded-full mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">Familie Müller</p>
+              </div>
+              <div className="text-center">
+                <div className="h-12 w-12 bg-muted rounded-full mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">Familie Weber</p>
+              </div>
             </div>
           </div>
         </div>
