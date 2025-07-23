@@ -7,17 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LoadingSpinner } from "@/common/loading-spinner"
 import { BookOpen, Sparkles, Clock, CheckCircle } from "lucide-react"
+import { supabase, Story } from "@/lib/supabase"
 
-interface StoryGeneration {
-  id: string
-  character: string
-  ageGroup: string
-  extraWishes: string
-  storyType: string
-  status: 'generating' | 'completed' | 'failed'
-  story?: string
-  createdAt: Date
-}
 
 const storyTypes = [
   "Abenteuer",
@@ -42,8 +33,36 @@ export default function StoryGeneratorPage() {
   const [extraWishes, setExtraWishes] = useState("")
   const [storyType, setStoryType] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generations, setGenerations] = useState<StoryGeneration[]>([])
+  const [generations, setGenerations] = useState<Story[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load stories from Supabase on component mount
+  useEffect(() => {
+    loadStories()
+  }, [])
+
+  const loadStories = async () => {
+    try {
+      const { data: stories, error } = await supabase
+        .from('stories')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) {
+        console.error('Error loading stories:', error)
+        setError('Fehler beim Laden der Geschichten')
+        return
+      }
+      
+      setGenerations(stories || [])
+    } catch (err) {
+      console.error('Error loading stories:', err)
+      setError('Fehler beim Laden der Geschichten')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleGenerate = async () => {
     if (!character.trim() || !ageGroup || !storyType) {
@@ -75,18 +94,8 @@ export default function StoryGeneratorPage() {
 
       const result = await response.json()
       
-      // Add new generation to list
-      const newGeneration: StoryGeneration = {
-        id: result.id || `story-${Date.now()}`,
-        character: character.trim(),
-        ageGroup,
-        extraWishes: extraWishes.trim(),
-        storyType,
-        status: 'generating',
-        createdAt: new Date()
-      }
-      
-      setGenerations(prev => [newGeneration, ...prev])
+      // Reload stories from Supabase to get the new one
+      await loadStories()
       
       // Start polling for story completion
       pollStoryStatus(result.id)
@@ -123,16 +132,10 @@ export default function StoryGeneratorPage() {
         const status = await response.json()
         console.log(`Story ${storyId} status:`, status)
         
-        setGenerations(prev => 
-          prev.map(gen => 
-            gen.id === storyId 
-              ? { ...gen, status: status.status, story: status.story }
-              : gen
-          )
-        )
-
         if (status.status === 'completed' || status.status === 'failed') {
           console.log(`Story ${storyId} finished with status: ${status.status}`)
+          // Reload all stories from Supabase to get the updated one
+          await loadStories()
           return // Stop polling
         }
 
@@ -142,14 +145,8 @@ export default function StoryGeneratorPage() {
           setTimeout(poll, 30000) // Poll every 30 seconds
         } else {
           console.log(`Max polling attempts reached for story ${storyId}`)
-          // Mark as failed if we can't get status
-          setGenerations(prev => 
-            prev.map(gen => 
-              gen.id === storyId 
-                ? { ...gen, status: 'failed' }
-                : gen
-            )
-          )
+          // Reload stories to ensure we have the latest state
+          await loadStories()
         }
       } catch (err) {
         console.error(`Polling error for story ${storyId}:`, err)
@@ -161,7 +158,7 @@ export default function StoryGeneratorPage() {
     setTimeout(poll, 10000) // Wait 10 seconds before first poll
   }
 
-  const getStatusBadge = (status: StoryGeneration['status']) => {
+  const getStatusBadge = (status: Story['status']) => {
     switch (status) {
       case 'generating':
         return <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
@@ -289,7 +286,14 @@ export default function StoryGeneratorPage() {
         {/* Generations List */}
         <div>
           <h2 className="text-2xl font-bold mb-4">Ihre Geschichten</h2>
-          {generations.length === 0 ? (
+          {isLoading ? (
+            <Card>
+              <CardContent className="text-center py-8">
+                <LoadingSpinner className="w-6 h-6 mx-auto mb-2" />
+                <p className="text-muted-foreground">Geschichten werden geladen...</p>
+              </CardContent>
+            </Card>
+          ) : generations.length === 0 ? (
             <Card>
               <CardContent className="text-center py-8">
                 <p className="text-muted-foreground">
@@ -307,19 +311,19 @@ export default function StoryGeneratorPage() {
                         <div className="flex items-center gap-2 mb-2">
                           {getStatusBadge(generation.status)}
                           <span className="text-sm text-muted-foreground">
-                            {generation.createdAt.toLocaleString()}
+                            {new Date(generation.created_at).toLocaleString()}
                           </span>
                         </div>
                         <h3 className="font-semibold mb-2">
-                          {generation.character} - {generation.storyType}
+                          {generation.character} - {generation.story_type}
                         </h3>
                         <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
                           <div>
-                            <span className="font-medium">Zielgruppe:</span> {generation.ageGroup}
+                            <span className="font-medium">Zielgruppe:</span> {generation.age_group}
                           </div>
-                          {generation.extraWishes && (
+                          {generation.extra_wishes && (
                             <div>
-                              <span className="font-medium">Extrawünsche:</span> {generation.extraWishes}
+                              <span className="font-medium">Extrawünsche:</span> {generation.extra_wishes}
                             </div>
                           )}
                         </div>
