@@ -55,7 +55,7 @@ export default function StoryGeneratorPage() {
     setError(null)
 
     try {
-      const response = await fetch('/api/generate-story', {
+      const response = await fetch('https://no-code-saas-test.onrender.com/api/generate-story', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
