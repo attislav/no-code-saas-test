@@ -113,7 +113,7 @@ export default function StoryGeneratorPage() {
       try {
         console.log(`Polling attempt ${attempts + 1}/${maxAttempts} for story ${storyId}`)
         
-        const response = await fetch(`/api/story-complete?id=${storyId}`)
+        const response = await fetch(`https://no-code-saas-test.onrender.com/api/webhook?id=${storyId}`)
         
         if (!response.ok) {
           console.error(`Polling failed with status ${response.status}:`, response.statusText)
