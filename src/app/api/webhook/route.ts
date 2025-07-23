@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 // Add CORS headers to response
 function addCorsHeaders(response: NextResponse) {
@@ -21,8 +22,7 @@ interface StoryCompleteRequest {
   error?: string
 }
 
-// In-memory storage for demo (in production, use a database)
-const storyStorage = new Map<string, StoryCompleteRequest>()
+// Using Supabase for persistent storage
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,10 +67,26 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(response)
     }
 
-    // Store the completed story
-    storyStorage.set(body.id, body)
+    // Store the completed story in Supabase
+    const { error: updateError } = await supabase
+      .from('stories')
+      .update({
+        story: body.story,
+        status: body.status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', body.id)
     
-    console.log(`Story ${body.id} ${body.status}. Storage size:`, storyStorage.size)
+    if (updateError) {
+      console.error('Error updating story in Supabase:', updateError)
+      const response = NextResponse.json(
+        { error: 'Fehler beim Speichern der Geschichte' },
+        { status: 500 }
+      )
+      return addCorsHeaders(response)
+    }
+    
+    console.log(`Story ${body.id} ${body.status} saved to Supabase`)
     
     const response = NextResponse.json({
       success: true,
@@ -103,7 +119,21 @@ export async function GET(request: NextRequest) {
       return addCorsHeaders(response)
     }
 
-    const storyData = storyStorage.get(storyId)
+    // Get story from Supabase
+    const { data: storyData, error: fetchError } = await supabase
+      .from('stories')
+      .select('*')
+      .eq('id', storyId)
+      .single()
+    
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('Error fetching story from Supabase:', fetchError)
+      const response = NextResponse.json(
+        { error: 'Fehler beim Laden der Geschichte' },
+        { status: 500 }
+      )
+      return addCorsHeaders(response)
+    }
     
     if (!storyData) {
       const response = NextResponse.json({
@@ -118,7 +148,7 @@ export async function GET(request: NextRequest) {
       id: storyData.id,
       status: storyData.status,
       story: storyData.story,
-      error: storyData.error
+      error: null
     })
     return addCorsHeaders(response)
 

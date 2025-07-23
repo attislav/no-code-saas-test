@@ -77,7 +77,7 @@ export default function StoryGeneratorPage() {
       
       // Add new generation to list
       const newGeneration: StoryGeneration = {
-        id: result.id,
+        id: result.id || `story-${Date.now()}`,
         character: character.trim(),
         ageGroup,
         extraWishes: extraWishes.trim(),

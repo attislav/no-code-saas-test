@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 interface GenerateStoryRequest {
   character: string
@@ -30,8 +31,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate unique ID for this story request
-    const storyId = `story-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    // Create story record in Supabase
+    const { data: newStory, error: insertError } = await supabase
+      .from('stories')
+      .insert({
+        character: body.character,
+        age_group: body.ageGroup,
+        story_type: body.storyType,
+        extra_wishes: body.extraWishes || null,
+        status: 'generating'
+      })
+      .select()
+      .single()
+    
+    if (insertError || !newStory) {
+      console.error('Error creating story in Supabase:', insertError)
+      return NextResponse.json(
+        { error: 'Fehler beim Erstellen der Geschichte' },
+        { status: 500 }
+      )
+    }
+    
+    const storyId = newStory.id
 
     // Prepare webhook payload
     const webhookPayload = {
