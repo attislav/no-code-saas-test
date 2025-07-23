@@ -334,9 +334,38 @@ export default function StoryGeneratorPage() {
                     
                     {generation.status === 'completed' && generation.story && (
                       <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-                        <h4 className="font-semibold mb-2">Die Geschichte:</h4>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold">Die Geschichte:</h4>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(generation.story || '')
+                                // Could add toast notification here
+                              }}
+                            >
+                              📋 Kopieren
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const element = document.createElement('a')
+                                const file = new Blob([generation.story || ''], {type: 'text/plain'})
+                                element.href = URL.createObjectURL(file)
+                                element.download = `${generation.character}_${generation.story_type}.txt`
+                                document.body.appendChild(element)
+                                element.click()
+                                document.body.removeChild(element)
+                              }}
+                            >
+                              💾 Download
+                            </Button>
+                          </div>
+                        </div>
                         <div className="prose prose-sm max-w-none">
-                          <div className="whitespace-pre-wrap">{generation.story}</div>
+                          <div className="whitespace-pre-wrap text-sm leading-relaxed">{generation.story}</div>
                         </div>
                       </div>
                     )}
