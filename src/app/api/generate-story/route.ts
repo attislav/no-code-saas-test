@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Create server-side Supabase client with explicit values
+// Create server-side Supabase client with service_role key for full access
 const supabase = createClient(
   'https://cngwfskwxtafyizccbtm.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuZ3dmc2t3eHRhZnlpemNjYnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzMDQzNDgsImV4cCI6MjA2ODg4MDM0OH0.mgYRg7kzc9i2kzLM2kZaL2pcRBeKObLfu-JL7ShoDyo'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuZ3dmc2t3eHRhZnlpemNjYnRtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzMwNDM0OCwiZXhwIjoyMDY4ODgwMzQ4fQ.ByC8CfSFwHEEQD-HWo5_NNr3SmsS6hcWinzO2o1pSh0'
 )
 
 interface GenerateStoryRequest {
