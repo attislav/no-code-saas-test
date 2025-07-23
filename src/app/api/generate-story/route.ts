@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { v4 as uuidv4 } from 'uuid'
 
 interface GenerateStoryRequest {
   character: string
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate unique ID for this story request
-    const storyId = uuidv4()
+    const storyId = `story-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
     // Prepare webhook payload
     const webhookPayload = {
