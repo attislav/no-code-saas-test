@@ -20,9 +20,6 @@ export function Header({ className }: HeaderProps) {
   const navigation = [
     { name: "Geschichte erstellen", href: "/story-generator" },
     { name: "Alle Geschichten", href: "/stories" },
-    { name: "Features", href: "/features" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Documentation", href: "/docs" },
   ]
 
   return (
