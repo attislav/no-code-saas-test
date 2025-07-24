@@ -85,10 +85,11 @@ CHARAKTER: Ein Roboter, der ständig seine Farbe wechselt`
         }
       ],
       max_tokens: 200,
-      temperature: 1.2, // Maximum creativity
-      top_p: 0.9, // Add more randomness
-      frequency_penalty: 0.8, // Avoid repetitive content
-      presence_penalty: 0.6, // Encourage new topics
+      temperature: 1.5, // Maximum creativity
+      top_p: 0.8, // Add more randomness
+      frequency_penalty: 1.0, // Maximum repetition avoidance
+      presence_penalty: 0.9, // Strong encouragement for new topics
+      seed: randomSeed // Use random seed for different results
     })
 
     const aiResponse = completion.choices[0]?.message?.content || ''
