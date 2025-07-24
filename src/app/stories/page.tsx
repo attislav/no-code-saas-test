@@ -228,7 +228,7 @@ export default function StoriesPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
             {filteredStories.map((story) => {
               const categorySlug = generateCategorySlug(story.story_type)
               const storyUrl = story.slug 
@@ -260,7 +260,7 @@ export default function StoriesPage() {
                       
                       {/* Story Info */}
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-xl mb-2 hover:text-primary transition-colors truncate">
+                        <CardTitle className="text-lg mb-2 hover:text-primary transition-colors leading-tight">
                           {story.title || `${story.character} - ${story.story_type}`}
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
@@ -284,17 +284,6 @@ export default function StoriesPage() {
                           variant="outline"
                           onClick={(e) => {
                             e.preventDefault()
-                            copyToClipboard(story.story || '')
-                          }}
-                        >
-                          <Copy className="w-4 h-4 mr-2" />
-                          Kopieren
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.preventDefault()
                             downloadStory(story)
                           }}
                         >
@@ -305,34 +294,26 @@ export default function StoriesPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose prose-sm max-w-none">
-                      <div className="text-sm leading-relaxed text-muted-foreground mb-4">
-                        {story.story ? 
-                          story.story.substring(0, 200) + (story.story.length > 200 ? '...' : '') 
-                          : 'Keine Vorschau verfügbar'
-                        }
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex gap-2">
+                        <Link 
+                          href={`/alter/${encodeURIComponent(story.age_group)}`}
+                          className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {story.age_group}
+                        </Link>
+                        <Link 
+                          href={`/kategorie/${encodeURIComponent(story.story_type)}`}
+                          className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {story.story_type}
+                        </Link>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-2">
-                          <Link 
-                            href={`/alter/${encodeURIComponent(story.age_group)}`}
-                            className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {story.age_group}
-                          </Link>
-                          <Link 
-                            href={`/kategorie/${encodeURIComponent(story.story_type)}`}
-                            className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {story.story_type}
-                          </Link>
-                        </div>
-                        <div className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
-                          Geschichte lesen
-                          <ArrowRight className="w-4 h-4 ml-1" />
-                        </div>
+                      <div className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors">
+                        Geschichte lesen
+                        <ArrowRight className="w-4 h-4 ml-1" />
                       </div>
                     </div>
                   </CardContent>
