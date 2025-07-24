@@ -257,7 +257,7 @@ export default function StoriesPage() {
                         {/* Story Preview Text */}
                         {story.story && (
                           <p className="text-sm text-muted-foreground line-clamp-2">
-                            {story.story.substring(0, 150)}...
+                            {story.story.replace(/<[^>]*>/g, '').substring(0, 150)}...
                           </p>
                         )}
                       </div>

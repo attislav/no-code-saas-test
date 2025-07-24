@@ -18,6 +18,7 @@ interface StoryContentProps {
 
 export default function StoryContent({ params }: StoryContentProps) {
   const [story, setStory] = useState<Story | null>(null)
+  const [relatedStories, setRelatedStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [, setDecodedCategory] = useState<string>('')
@@ -82,11 +83,46 @@ export default function StoryContent({ params }: StoryContentProps) {
       setStory(finalStoryData)
       setError(null)
       
+      // Load related stories
+      loadRelatedStories(finalStoryData)
+      
     } catch (err) {
       console.error('Error in loadStory:', err)
       setError('Ein unerwarteter Fehler ist aufgetreten')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const loadRelatedStories = async (currentStory: Story) => {
+    try {
+      console.log('Loading related stories for:', currentStory.title)
+      
+      // Get stories of same age group or same story type, excluding current story
+      const { data: stories, error } = await supabase
+        .from('stories')
+        .select('*')
+        .eq('status', 'completed')
+        .neq('id', currentStory.id)
+        .or(`age_group.eq.${currentStory.age_group},story_type.eq.${currentStory.story_type}`)
+        .order('created_at', { ascending: false })
+        .limit(20) // Get more to have options for randomization
+      
+      if (error) {
+        console.error('Error loading related stories:', error)
+        return
+      }
+      
+      if (stories && stories.length > 0) {
+        // Randomize and limit to 6 stories
+        const shuffled = stories.sort(() => 0.5 - Math.random())
+        const selectedStories = shuffled.slice(0, 6)
+        setRelatedStories(selectedStories)
+        console.log('Loaded related stories:', selectedStories.length)
+      }
+      
+    } catch (err) {
+      console.error('Error loading related stories:', err)
     }
   }
 
@@ -268,6 +304,57 @@ export default function StoryContent({ params }: StoryContentProps) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Related Stories Section */}
+          {relatedStories.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-2xl font-bold mb-6 text-center">Passende Geschichten</h2>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {relatedStories.map((relatedStory) => {
+                  const categorySlug = generateCategorySlug(relatedStory.story_type)
+                  const storyUrl = relatedStory.slug 
+                    ? `/${categorySlug}/${relatedStory.slug}` 
+                    : `/story/${relatedStory.id}`
+                  
+                  return (
+                    <Link key={relatedStory.id} href={storyUrl}>
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
+                        <div className="aspect-[4/3] relative">
+                          {relatedStory.image_url ? (
+                            <img 
+                              src={relatedStory.image_url} 
+                              alt={relatedStory.title || 'Titelbild'}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none'
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                              <BookOpen className="w-12 h-12 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-sm leading-tight hover:text-primary transition-colors line-clamp-2">
+                            {relatedStory.title || `${relatedStory.character} - ${relatedStory.story_type}`}
+                          </h3>
+                          <div className="flex gap-1 mt-2">
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                              {relatedStory.age_group}
+                            </span>
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                              {relatedStory.story_type}
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
