@@ -77,7 +77,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Store the story (partial or complete) in Supabase
-    const updateData: any = {
+    const updateData: {
+      status: string
+      updated_at: string
+      title?: string
+      story?: string
+      partial_story?: string
+      is_partial?: boolean
+    } = {
       status: body.status,
       updated_at: new Date().toISOString()
     }
