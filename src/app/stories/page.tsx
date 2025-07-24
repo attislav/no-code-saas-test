@@ -163,7 +163,7 @@ export default function StoriesPage() {
               <div className="flex flex-wrap gap-2 mt-4">
                 {searchTerm && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    Suche: "{searchTerm}"
+                    Suche: &quot;{searchTerm}&quot;
                     <button 
                       onClick={() => setSearchTerm("")}
                       className="ml-1 hover:text-primary/80"
