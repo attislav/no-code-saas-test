@@ -12,6 +12,7 @@ export interface Story {
   story_type: string
   extra_wishes?: string
   title?: string
+  slug?: string
   story?: string
   partial_story?: string
   is_partial?: boolean

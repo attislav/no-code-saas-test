@@ -41,7 +41,7 @@ export function Header({ className }: HeaderProps) {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="text-sm font-medium transition-colors hover:text-primary hover:bg-muted/50 px-3 py-2 rounded-md"
             >
               {item.name}
             </Link>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/common/loading-spinner"
 import { BookOpen, Search, Download, Copy, CheckCircle, ArrowRight } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
+import { generateCategorySlug } from "@/lib/slug"
 import Link from "next/link"
 
 export default function StoriesPage() {
@@ -142,9 +143,15 @@ export default function StoriesPage() {
           </Card>
         ) : (
           <div className="grid gap-6">
-            {filteredStories.map((story) => (
-              <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href={`/story/${story.id}`} className="block">
+            {filteredStories.map((story) => {
+              const categorySlug = generateCategorySlug(story.story_type)
+              const storyUrl = story.slug 
+                ? `/${categorySlug}/${story.slug}` 
+                : `/story/${story.id}` // Fallback for stories without slug
+              
+              return (
+                <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                  <Link href={storyUrl} className="block">
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -156,7 +163,7 @@ export default function StoriesPage() {
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             Fertig
                           </span>
-                          <span>{new Date(story.created_at).toLocaleDateString()}</span>
+                          <span>{new Date(story.created_at).toLocaleString('de-DE')}</span>
                           <span>ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit</span>
                         </div>
                         {story.extra_wishes && (
@@ -225,7 +232,8 @@ export default function StoriesPage() {
                   </CardContent>
                 </Link>
               </Card>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

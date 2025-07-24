@@ -47,12 +47,14 @@ export default function StoryGeneratorPage() {
     // Only load stories that were generated in this session
     // This function is called after generating a new story
     try {
-      console.log('Loading recent stories from Supabase...')
+      console.log('Loading current session story from Supabase...')
+      // Only load the most recent story that's currently being generated or just completed
       const { data: stories, error } = await supabase
         .from('stories')
         .select('*')
+        .in('status', ['generating', 'partial'])
         .order('created_at', { ascending: false })
-        .limit(5) // Only show the 5 most recent stories
+        .limit(1)
       
       if (error) {
         console.error('Supabase error loading stories:', error)
@@ -60,7 +62,7 @@ export default function StoryGeneratorPage() {
         return
       }
       
-      console.log('Loaded recent stories:', stories)
+      console.log('Loaded current session story:', stories)
       setGenerations(stories || [])
     } catch (err) {
       console.error('Error loading stories:', err)
@@ -274,7 +276,7 @@ export default function StoryGeneratorPage() {
             <Button 
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="w-full"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
             >
               {isGenerating ? (
                 <>

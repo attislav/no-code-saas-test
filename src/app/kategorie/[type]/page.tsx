@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/common/loading-spinner"
 import { BookOpen, ArrowLeft, CheckCircle, Copy, Download, ArrowRight } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
+import { generateCategorySlug } from "@/lib/slug"
 import Link from "next/link"
 
 interface TypeFilterPageProps {
@@ -133,9 +134,15 @@ export default function TypeFilterPage({ params }: TypeFilterPageProps) {
           </Card>
         ) : (
           <div className="grid gap-6">
-            {stories.map((story) => (
-              <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                <Link href={`/story/${story.id}`} className="block">
+            {stories.map((story) => {
+              const categorySlug = generateCategorySlug(story.story_type)
+              const storyUrl = story.slug 
+                ? `/${categorySlug}/${story.slug}` 
+                : `/story/${story.id}` // Fallback for stories without slug
+              
+              return (
+                <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                  <Link href={storyUrl} className="block">
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -147,7 +154,7 @@ export default function TypeFilterPage({ params }: TypeFilterPageProps) {
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             Fertig
                           </span>
-                          <span>{new Date(story.created_at).toLocaleDateString()}</span>
+                          <span>{new Date(story.created_at).toLocaleString('de-DE')}</span>
                           <span>ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit</span>
                         </div>
                         {story.extra_wishes && (
@@ -212,7 +219,8 @@ export default function TypeFilterPage({ params }: TypeFilterPageProps) {
                   </CardContent>
                 </Link>
               </Card>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

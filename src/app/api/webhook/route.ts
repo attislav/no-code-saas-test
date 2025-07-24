@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { generateStorySlug } from '@/lib/slug'
 
 // Create server-side Supabase client with service_role key for full access
 const supabase = createClient(
@@ -24,6 +25,7 @@ export async function OPTIONS() {
 interface StoryCompleteRequest {
   id: string
   title?: string
+  slug?: string
   story?: string
   partial_story?: string
   status: 'partial' | 'completed' | 'failed'
@@ -76,11 +78,19 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(response)
     }
 
+    // Get current story data to generate slug if needed
+    const { data: currentStory } = await supabase
+      .from('stories')
+      .select('character, story_type, slug')
+      .eq('id', body.id)
+      .single()
+
     // Store the story (partial or complete) in Supabase
     const updateData: {
       status: string
       updated_at: string
       title?: string
+      slug?: string
       story?: string
       partial_story?: string
       is_partial?: boolean
@@ -93,6 +103,45 @@ export async function POST(request: NextRequest) {
     if (body.story) updateData.story = body.story
     if (body.partial_story) updateData.partial_story = body.partial_story
     if (body.is_partial !== undefined) updateData.is_partial = body.is_partial
+
+    // Generate slug if we have a title and don't have a slug yet
+    if (body.title && currentStory && !currentStory.slug) {
+      const generatedSlug = generateStorySlug(body.title, currentStory.character, currentStory.story_type)
+      
+      // Check if slug exists already
+      const { data: existingStory } = await supabase
+        .from('stories')
+        .select('slug')
+        .eq('slug', generatedSlug)
+        .single()
+      
+      if (!existingStory) {
+        updateData.slug = generatedSlug
+      } else {
+        // Generate unique slug with number suffix
+        let counter = 1
+        let uniqueSlug = `${generatedSlug}-${counter}`
+        
+        while (true) {
+          const { data: conflictingStory } = await supabase
+            .from('stories')
+            .select('slug')
+            .eq('slug', uniqueSlug)
+            .single()
+          
+          if (!conflictingStory) {
+            updateData.slug = uniqueSlug
+            break
+          }
+          
+          counter++
+          uniqueSlug = `${generatedSlug}-${counter}`
+        }
+      }
+    }
+    
+    // Use provided slug if available
+    if (body.slug) updateData.slug = body.slug
 
     const { error: updateError } = await supabase
       .from('stories')
