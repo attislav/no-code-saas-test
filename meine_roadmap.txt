@@ -1,0 +1,17 @@
+- Account anlegen können
+- DB braucht dann noch eine Spalte mit User, damit wir jede Story einem User zuordnen können.
+Der Username steht dann auch bei jeder story dabei und ist klickbar, so dass man alle Stories eines users sehen kann
+- Stories bewerten mit Sternen
+- S kommentieren
+- Stories favorisieren, so dass man eigene und fremde Stories speichern und schnell wiederfinden kann
+- Stories vertonen lassen.
+- Teilen button
+- Bilder pro kapitel erstellen (SRef auf das titelbild, um konsistenten Stil zu erzielen ODER profile für verschiedene Stile erstellen)
+- Startseite überarbeiten
+- Impressum, datenschutz
+- Cookie Banner
+- Master Account mit dem ich schnell Stories löschen kann
+- Wort Filter in Make, um schlechte Prompts zu verhindern
+- Footer
+- Menü mit Punkten, die direkt zu wichtigen Kategorie und Tags führen
+- 

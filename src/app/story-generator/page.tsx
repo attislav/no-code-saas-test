@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LoadingSpinner } from "@/common/loading-spinner"
-import { BookOpen, Sparkles, Clock, CheckCircle } from "lucide-react"
+import { BookOpen, Sparkles, Clock, CheckCircle, Dice6 } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { Typewriter } from "@/components/typewriter"
 import { generateCategorySlug } from "@/lib/slug"
 import { useRouter } from "next/navigation"
+import HeroCarousel from "@/components/hero-carousel"
 
 
 const storyTypes = [
@@ -39,6 +40,7 @@ export default function StoryGeneratorPage() {
   const [generations, setGenerations] = useState<Story[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isGeneratingRandom, setIsGeneratingRandom] = useState(false)
   const router = useRouter()
 
   // Don't load any old stories on mount - only show newly generated ones
@@ -188,6 +190,45 @@ export default function StoryGeneratorPage() {
     setTimeout(poll, 10000) // Wait 10 seconds before first poll
   }
 
+  const handleRandomStory = async () => {
+    setIsGeneratingRandom(true)
+    setError(null)
+
+    try {
+      console.log('Fetching random story data...')
+      const response = await fetch('/api/random-story-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Fehler bei der Zufallsdaten-Generierung: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+      
+      if (result.success && result.data) {
+        // Fill form with random data
+        setCharacter(result.data.character)
+        setAgeGroup(result.data.ageGroup)
+        setStoryType(result.data.storyType)
+        setExtraWishes(result.data.extraWishes)
+        
+        console.log('Random story data filled:', result.data)
+      } else {
+        throw new Error('Keine Zufallsdaten erhalten')
+      }
+      
+    } catch (err) {
+      console.error('Random story error:', err)
+      setError(err instanceof Error ? err.message : 'Ein unbekannter Fehler ist aufgetreten')
+    } finally {
+      setIsGeneratingRandom(false)
+    }
+  }
+
   const getStatusBadge = (status: Story['status']) => {
     switch (status) {
       case 'generating':
@@ -215,10 +256,19 @@ export default function StoryGeneratorPage() {
   return (
     <div className="container py-8">
       <div className="mx-auto max-w-4xl">
+        {/* Hero Carousel - simple version for generator */}
+        <HeroCarousel 
+          showText={false} 
+          showNavigation={false}
+          showTitle={false}
+          aspectRatio="16:9"
+          height="sm" 
+        />
+        
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Kindergeschichten Generator
-          </h1>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
+            Geschichte erstellen
+          </h2>
           <p className="mt-2 text-muted-foreground">
             Erstellen Sie personalisierte Kindergeschichten mit KI
           </p>
@@ -298,23 +348,43 @@ export default function StoryGeneratorPage() {
               </div>
             )}
 
-            <Button 
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
-            >
-              {isGenerating ? (
-                <>
-                  <LoadingSpinner className="w-4 h-4 mr-2" />
-                  Geschichte wird erstellt...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Geschichte erstellen
-                </>
-              )}
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleGenerate}
+                disabled={isGenerating || isGeneratingRandom}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
+              >
+                {isGenerating ? (
+                  <>
+                    <LoadingSpinner className="w-4 h-4 mr-2" />
+                    Geschichte wird erstellt...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Geschichte erstellen
+                  </>
+                )}
+              </Button>
+              
+              <Button 
+                onClick={handleRandomStory}
+                disabled={isGenerating || isGeneratingRandom}
+                className="px-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold border-0"
+              >
+                {isGeneratingRandom ? (
+                  <>
+                    <LoadingSpinner className="w-4 h-4 mr-2" />
+                    Zufallsgeschichte...
+                  </>
+                ) : (
+                  <>
+                    <Dice6 className="w-4 h-4 mr-2" />
+                    Zufallsgeschichte
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

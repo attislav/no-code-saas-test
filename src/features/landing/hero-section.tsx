@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle, BookOpen } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { APP_DESCRIPTION } from "@/lib/constants"
+import HeroCarousel from "@/components/hero-carousel"
 
 export function HeroSection() {
   return (
@@ -29,6 +30,17 @@ export function HeroSection() {
             Erstellen Sie personalisierte Kindergeschichten mit künstlicher Intelligenz. 
             Einzigartige Geschichten für jedes Kind, angepasst an Alter und Interessen.
           </p>
+
+          {/* Hero Carousel */}
+          <div className="mt-12 mb-8">
+            <HeroCarousel 
+              showText={false} 
+              showNavigation={true}
+              showTitle={true}
+              aspectRatio="16:9"
+              height="lg" 
+            />
+          </div>
 
           {/* CTA Buttons */}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
