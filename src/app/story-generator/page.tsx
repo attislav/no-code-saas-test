@@ -38,18 +38,21 @@ export default function StoryGeneratorPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load stories from Supabase on component mount
+  // Don't load any old stories on mount - only show newly generated ones
   useEffect(() => {
-    loadStories()
+    setIsLoading(false)
   }, [])
 
   const loadStories = async () => {
+    // Only load stories that were generated in this session
+    // This function is called after generating a new story
     try {
-      console.log('Loading stories from Supabase...')
+      console.log('Loading recent stories from Supabase...')
       const { data: stories, error } = await supabase
         .from('stories')
         .select('*')
         .order('created_at', { ascending: false })
+        .limit(5) // Only show the 5 most recent stories
       
       if (error) {
         console.error('Supabase error loading stories:', error)
@@ -57,13 +60,11 @@ export default function StoryGeneratorPage() {
         return
       }
       
-      console.log('Loaded stories:', stories)
+      console.log('Loaded recent stories:', stories)
       setGenerations(stories || [])
     } catch (err) {
       console.error('Error loading stories:', err)
       setError(`Fehler beim Laden der Geschichten: ${err instanceof Error ? err.message : 'Unknown error'}`)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -388,11 +389,9 @@ export default function StoryGeneratorPage() {
                           </div>
                         </div>
                         <div className="prose prose-sm max-w-none">
-                          <Typewriter 
-                            text={generation.story}
-                            speed={15}
-                            className="text-sm leading-relaxed whitespace-pre-wrap"
-                          />
+                          <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                            {generation.story}
+                          </div>
                         </div>
                       </div>
                     )}
