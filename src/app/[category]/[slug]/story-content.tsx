@@ -317,9 +317,9 @@ export default function StoryContent({ params }: StoryContentProps) {
                     : `/story/${relatedStory.id}`
                   
                   return (
-                    <Link key={relatedStory.id} href={storyUrl}>
-                      <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
-                        <div className="aspect-[4/3] relative">
+                    <Card key={relatedStory.id} className="overflow-hidden hover:shadow-lg transition-shadow h-full">
+                      <Link href={storyUrl}>
+                        <div className="aspect-[4/3] relative cursor-pointer">
                           {relatedStory.image_url ? (
                             <img 
                               src={relatedStory.image_url} 
@@ -335,21 +335,29 @@ export default function StoryContent({ params }: StoryContentProps) {
                             </div>
                           )}
                         </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-sm leading-tight hover:text-primary transition-colors line-clamp-2">
+                      </Link>
+                      <CardContent className="p-4">
+                        <Link href={storyUrl}>
+                          <h3 className="font-semibold text-sm leading-tight hover:text-primary transition-colors line-clamp-2 cursor-pointer">
                             {relatedStory.title || `${relatedStory.character} - ${relatedStory.story_type}`}
                           </h3>
-                          <div className="flex gap-1 mt-2">
-                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                              {relatedStory.age_group}
-                            </span>
-                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                              {relatedStory.story_type}
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
+                        </Link>
+                        <div className="flex gap-1 mt-2">
+                          <Link 
+                            href={`/alter/${encodeURIComponent(relatedStory.age_group)}`}
+                            className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 transition-colors"
+                          >
+                            {relatedStory.age_group}
+                          </Link>
+                          <Link 
+                            href={`/kategorie/${encodeURIComponent(relatedStory.story_type)}`}
+                            className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full hover:bg-green-200 transition-colors"
+                          >
+                            {relatedStory.story_type}
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
                   )
                 })}
               </div>
