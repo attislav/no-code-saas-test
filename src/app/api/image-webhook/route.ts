@@ -31,42 +31,60 @@ interface ImageWebhookRequest {
 // Function to download and store image in Supabase Storage
 async function downloadAndStoreImage(imageUrl: string, storyId: string): Promise<string | null> {
   try {
-    console.log('Downloading image:', imageUrl)
+    console.log('Downloading image from:', imageUrl)
     
     // Download the image
-    const response = await fetch(imageUrl)
+    const response = await fetch(imageUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    })
+    
     if (!response.ok) {
-      throw new Error(`Failed to download image: ${response.statusText}`)
+      console.error(`Failed to download image: ${response.status} ${response.statusText}`)
+      return null
     }
     
     const arrayBuffer = await response.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
+    console.log(`Downloaded image size: ${buffer.length} bytes`)
     
-    // Get file extension from URL or default to jpg
-    const urlParts = imageUrl.split('.')
-    const extension = urlParts.length > 1 ? urlParts.pop()?.toLowerCase() || 'jpg' : 'jpg'
+    // Get file extension from URL or content-type
+    let extension = 'jpg'
+    const contentType = response.headers.get('content-type')
+    if (contentType?.includes('png')) extension = 'png'
+    else if (contentType?.includes('webp')) extension = 'webp'
+    else if (contentType?.includes('gif')) extension = 'gif'
+    
     const fileName = `story-${storyId}-${Date.now()}.${extension}`
+    console.log(`Uploading to Supabase Storage as: ${fileName}`)
     
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from('story-images')
       .upload(fileName, buffer, {
-        contentType: `image/${extension === 'jpg' ? 'jpeg' : extension}`,
+        contentType: contentType || 'image/jpeg',
         upsert: false
       })
     
     if (error) {
       console.error('Supabase storage upload error:', error)
+      // Try to get more details about the bucket
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
+      console.log('Available buckets:', buckets, 'Error:', bucketsError)
       return null
     }
+    
+    console.log('Upload successful, data:', data)
     
     // Get public URL
     const { data: publicUrlData } = supabase.storage
       .from('story-images')
       .getPublicUrl(fileName)
     
-    console.log('Image stored successfully:', publicUrlData.publicUrl)
-    return publicUrlData.publicUrl
+    const finalUrl = publicUrlData.publicUrl
+    console.log('Image stored successfully at:', finalUrl)
+    return finalUrl
     
   } catch (error) {
     console.error('Error downloading/storing image:', error)
