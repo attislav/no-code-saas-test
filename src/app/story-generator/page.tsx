@@ -9,6 +9,8 @@ import { LoadingSpinner } from "@/common/loading-spinner"
 import { BookOpen, Sparkles, Clock, CheckCircle } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { Typewriter } from "@/components/typewriter"
+import { generateCategorySlug } from "@/lib/slug"
+import { useRouter } from "next/navigation"
 
 
 const storyTypes = [
@@ -37,6 +39,7 @@ export default function StoryGeneratorPage() {
   const [generations, setGenerations] = useState<Story[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   // Don't load any old stories on mount - only show newly generated ones
   useEffect(() => {
@@ -141,8 +144,30 @@ export default function StoryGeneratorPage() {
         // Update stories on any status change
         await loadStories()
 
-        if (status.status === 'completed' || status.status === 'failed') {
-          console.log(`Story ${storyId} finished with status: ${status.status}`)
+        if (status.status === 'completed') {
+          console.log(`Story ${storyId} completed successfully`)
+          
+          // Get the completed story from database to get slug
+          const { data: completedStory } = await supabase
+            .from('stories')
+            .select('*')
+            .eq('id', storyId)
+            .single()
+          
+          if (completedStory && completedStory.slug) {
+            // Navigate to the completed story
+            const categorySlug = generateCategorySlug(completedStory.story_type)
+            router.push(`/${categorySlug}/${completedStory.slug}`)
+          } else {
+            // Fallback to story ID if no slug
+            router.push(`/story/${storyId}`)
+          }
+          return // Stop polling
+        }
+        
+        if (status.status === 'failed') {
+          console.log(`Story ${storyId} failed`)
+          setError('Die Geschichte konnte nicht erstellt werden. Versuchen Sie es erneut.')
           return // Stop polling
         }
 
@@ -391,33 +416,6 @@ export default function StoryGeneratorPage() {
                       <div className="mt-4 p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold">Die komplette Geschichte:</h4>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                navigator.clipboard.writeText(generation.story || '')
-                                // Could add toast notification here
-                              }}
-                            >
-                              📋 Kopieren
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                const element = document.createElement('a')
-                                const file = new Blob([generation.story || ''], {type: 'text/plain'})
-                                element.href = URL.createObjectURL(file)
-                                element.download = `${generation.title || generation.character}_${generation.story_type}.txt`
-                                document.body.appendChild(element)
-                                element.click()
-                                document.body.removeChild(element)
-                              }}
-                            >
-                              💾 Download
-                            </Button>
-                          </div>
                         </div>
                         <div className="prose prose-sm max-w-none">
                           <div className="text-sm leading-relaxed whitespace-pre-wrap">

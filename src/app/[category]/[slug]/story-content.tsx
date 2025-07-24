@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/common/loading-spinner"
-import { ArrowLeft, Copy, Download, Clock, Calendar } from "lucide-react"
+import { ArrowLeft, Clock, Calendar } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { generateCategorySlug } from "@/lib/slug"
 import Link from "next/link"
@@ -90,24 +90,6 @@ export default function StoryContent({ params }: StoryContentProps) {
     }
   }
 
-  const copyToClipboard = async (story: string) => {
-    try {
-      await navigator.clipboard.writeText(story)
-      // Could add toast notification here
-    } catch (err) {
-      console.error('Failed to copy:', err)
-    }
-  }
-
-  const downloadStory = (story: Story) => {
-    const element = document.createElement('a')
-    const file = new Blob([story.story || ''], {type: 'text/plain'})
-    element.href = URL.createObjectURL(file)
-    element.download = `${story.character}_${story.story_type}.txt`
-    document.body.appendChild(element)
-    element.click()
-    document.body.removeChild(element)
-  }
 
   if (isLoading) {
     return (
@@ -251,29 +233,10 @@ export default function StoryContent({ params }: StoryContentProps) {
                   </Link>
                 </div>
                 
-                {/* Action Buttons */}
-                <div className="flex justify-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => copyToClipboard(story.story || '')}
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Kopieren
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => downloadStory(story)}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-lg max-w-none">
+              <div className="max-w-none">
                 <div 
                   className="story-content"
                   dangerouslySetInnerHTML={{ __html: story.story || '' }}
@@ -282,6 +245,26 @@ export default function StoryContent({ params }: StoryContentProps) {
                     fontSize: '1.1rem'
                   }}
                 />
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                    .story-content h2 {
+                      font-size: 1.75rem !important;
+                      font-weight: bold !important;
+                      color: #1f2937 !important;
+                      margin-top: 2rem !important;
+                      margin-bottom: 1rem !important;
+                      padding-bottom: 0.5rem !important;
+                      border-bottom: 2px solid #e5e7eb !important;
+                    }
+                    .story-content p {
+                      margin-bottom: 1.5rem !important;
+                      line-height: 1.8 !important;
+                    }
+                    .story-content p:last-child {
+                      margin-bottom: 0 !important;
+                    }
+                  `
+                }} />
               </div>
             </CardContent>
           </Card>

@@ -3,59 +3,42 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/common/loading-spinner"
-import { BookOpen, Search, CheckCircle, ArrowRight } from "lucide-react"
+import { BookOpen, ArrowLeft, CheckCircle, ArrowRight } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { generateCategorySlug } from "@/lib/slug"
 import Link from "next/link"
 
-export default function StoriesPage() {
+interface TypeFilterContentProps {
+  params: Promise<{
+    type: string
+  }>
+}
+
+export default function TypeFilterContent({ params }: TypeFilterContentProps) {
   const [stories, setStories] = useState<Story[]>([])
-  const [filteredStories, setFilteredStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState("all")
   const [error, setError] = useState<string | null>(null)
+  const [decodedType, setDecodedType] = useState<string>('')
 
   useEffect(() => {
-    loadStories()
-  }, [])
+    const loadParams = async () => {
+      const resolvedParams = await params
+      const type = decodeURIComponent(resolvedParams.type)
+      setDecodedType(type)
+      loadStories(type)
+    }
+    loadParams()
+  }, [params])
 
-  useEffect(() => {
-    let filtered = [...stories]
-    
-    // Filter by search term
-    if (searchTerm.trim() !== "") {
-      filtered = filtered.filter(story => 
-        story.character.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        story.story_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (story.story && story.story.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (story.title && story.title.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
-    }
-    
-    // Filter by category
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter(story => story.story_type === selectedCategory)
-    }
-    
-    // Filter by age group
-    if (selectedAgeGroup !== "all") {
-      filtered = filtered.filter(story => story.age_group === selectedAgeGroup)
-    }
-    
-    setFilteredStories(filtered)
-  }, [searchTerm, selectedCategory, selectedAgeGroup, stories])
-
-  const loadStories = async () => {
+  const loadStories = async (storyType: string) => {
     try {
-      console.log('Loading all stories from Supabase...')
+      console.log('Loading stories for type:', storyType)
       const { data: storiesData, error } = await supabase
         .from('stories')
         .select('*')
         .eq('status', 'completed')
+        .eq('story_type', storyType)
         .order('created_at', { ascending: false })
       
       if (error) {
@@ -66,7 +49,6 @@ export default function StoriesPage() {
       
       console.log('Loaded stories:', storiesData)
       setStories(storiesData || [])
-      setFilteredStories(storiesData || [])
     } catch (err) {
       console.error('Error loading stories:', err)
       setError(`Fehler beim Laden der Geschichten: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -75,12 +57,10 @@ export default function StoriesPage() {
     }
   }
 
-
-
   if (isLoading) {
     return (
       <div className="container py-8">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-6xl">
           <Card>
             <CardContent className="text-center py-8">
               <LoadingSpinner className="w-6 h-6 mx-auto mb-2" />
@@ -95,100 +75,24 @@ export default function StoriesPage() {
   return (
     <div className="container py-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Alle Geschichten
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            Durchsuchen Sie alle erstellten Kindergeschichten
-          </p>
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link href="/stories">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Zurück zu allen Geschichten
+            </Button>
+          </Link>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Geschichten durchsuchen..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              {/* Category Filter */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="all">Alle Kategorien</option>
-                <option value="Abenteuer">Abenteuer</option>
-                <option value="Märchen">Märchen</option>
-                <option value="Lerngeschichte">Lerngeschichte</option>
-                <option value="Gute-Nacht-Geschichte">Gute-Nacht-Geschichte</option>
-                <option value="Freundschaftsgeschichte">Freundschaftsgeschichte</option>
-                <option value="Tiergeschichte">Tiergeschichte</option>
-              </select>
-              
-              {/* Age Group Filter */}
-              <select
-                value={selectedAgeGroup}
-                onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="all">Alle Altersgruppen</option>
-                <option value="3-4 Jahre">3-4 Jahre</option>
-                <option value="4-6 Jahre">4-6 Jahre</option>
-                <option value="6-8 Jahre">6-8 Jahre</option>
-                <option value="8-10 Jahre">8-10 Jahre</option>
-                <option value="10-12 Jahre">10-12 Jahre</option>
-              </select>
-            </div>
-            
-            {/* Active Filters Display */}
-            {(selectedCategory !== "all" || selectedAgeGroup !== "all" || searchTerm) && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {searchTerm && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    Suche: &quot;{searchTerm}&quot;
-                    <button 
-                      onClick={() => setSearchTerm("")}
-                      className="ml-1 hover:text-primary/80"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {selectedCategory !== "all" && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    Kategorie: {selectedCategory}
-                    <button 
-                      onClick={() => setSelectedCategory("all")}
-                      className="ml-1 hover:text-blue-600"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {selectedAgeGroup !== "all" && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Alter: {selectedAgeGroup}
-                    <button 
-                      onClick={() => setSelectedAgeGroup("all")}
-                      className="ml-1 hover:text-green-600"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {decodedType || 'Kategorie'}-Geschichten
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Alle Geschichten der Kategorie {decodedType || 'diese Kategorie'}
+          </p>
+        </div>
 
         {error && (
           <Card className="mb-6">
@@ -201,18 +105,18 @@ export default function StoriesPage() {
         )}
 
         {/* Stories Grid */}
-        {filteredStories.length === 0 ? (
+        {stories.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
               <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">
-{searchTerm ? 'Keine Geschichten gefunden für Ihre Suche.' : 'Noch keine Geschichten vorhanden.'}
+                Noch keine {decodedType || 'Kategorie'}-Geschichten vorhanden.
               </p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
-            {filteredStories.map((story) => {
+            {stories.map((story) => {
               const categorySlug = generateCategorySlug(story.story_type)
               const storyUrl = story.slug 
                 ? `/${categorySlug}/${story.slug}` 
