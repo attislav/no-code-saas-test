@@ -20,8 +20,8 @@ export default function StoryPage({ params }: StoryPageProps) {
   const [story, setStory] = useState<Story | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [decodedCategory, setDecodedCategory] = useState<string>('')
-  const [decodedSlug, setDecodedSlug] = useState<string>('')
+  const [, setDecodedCategory] = useState<string>('')
+  const [, setDecodedSlug] = useState<string>('')
 
   useEffect(() => {
     const loadParams = async () => {
@@ -40,14 +40,16 @@ export default function StoryPage({ params }: StoryPageProps) {
       console.log('Loading story:', { category, slug })
       
       // First try to find by slug
-      let { data: storyData, error } = await supabase
+      const { data: storyData, error } = await supabase
         .from('stories')
         .select('*')
         .eq('slug', slug)
         .single()
       
+      let finalStoryData = storyData
+      
       // If not found by slug, try to find by category and fallback to ID-based lookup
-      if (!storyData && slug.includes('-')) {
+      if (!finalStoryData && slug.includes('-')) {
         const potentialId = slug.split('-').pop()
         if (potentialId && potentialId.length > 10) {
           const { data: fallbackStory } = await supabase
@@ -57,7 +59,7 @@ export default function StoryPage({ params }: StoryPageProps) {
             .single()
           
           if (fallbackStory) {
-            storyData = fallbackStory
+            finalStoryData = fallbackStory
           }
         }
       }
@@ -68,19 +70,19 @@ export default function StoryPage({ params }: StoryPageProps) {
         return
       }
       
-      if (!storyData) {
+      if (!finalStoryData) {
         setError('Geschichte nicht gefunden')
         return
       }
       
       // Verify category matches story type
-      const expectedCategory = generateCategorySlug(storyData.story_type)
+      const expectedCategory = generateCategorySlug(finalStoryData.story_type)
       if (expectedCategory !== category.toLowerCase()) {
         console.warn('Category mismatch:', { expected: expectedCategory, actual: category })
       }
       
-      console.log('Loaded story:', storyData)
-      setStory(storyData)
+      console.log('Loaded story:', finalStoryData)
+      setStory(finalStoryData)
     } catch (err) {
       console.error('Error loading story:', err)
       setError(`Fehler beim Laden der Geschichte: ${err instanceof Error ? err.message : 'Unknown error'}`)

@@ -18,7 +18,7 @@ export default function StoryPage({ params }: StoryPageProps) {
   const [story, setStory] = useState<Story | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [storyId, setStoryId] = useState<string>('')
+  const [, setStoryId] = useState<string>('')
 
   useEffect(() => {
     const loadParams = async () => {
