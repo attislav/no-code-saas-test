@@ -95,7 +95,7 @@ export default function HeroHeader({ showText = true, height = 'md' }: HeroHeade
             </p>
             {heroStory && (
               <p className="text-sm text-white/60 mt-4">
-                Bildquelle: "{heroStory.title || heroStory.character}"
+                Bildquelle: &quot;{heroStory.title || heroStory.character}&quot;
               </p>
             )}
           </div>

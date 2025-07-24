@@ -262,7 +262,8 @@ export default function StoryGeneratorPage() {
           showNavigation={false}
           showTitle={false}
           aspectRatio="16:9"
-          height="sm" 
+          height="sm"
+          clickable={false}
         />
         
         <div className="mb-8">

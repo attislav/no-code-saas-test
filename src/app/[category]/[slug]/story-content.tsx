@@ -308,7 +308,7 @@ export default function StoryContent({ params }: StoryContentProps) {
           {/* Related Stories Section */}
           {relatedStories.length > 0 && (
             <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6 text-center">Passende Geschichten</h2>
+              <h2 className="text-2xl font-bold mb-6 text-center">Entdecke weitere Geschichten</h2>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {relatedStories.map((relatedStory) => {
                   const categorySlug = generateCategorySlug(relatedStory.story_type)

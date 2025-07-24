@@ -12,6 +12,7 @@ interface HeroCarouselProps {
   showTitle?: boolean
   aspectRatio?: '4:3' | '16:9'
   height?: 'sm' | 'md' | 'lg'
+  clickable?: boolean
 }
 
 export default function HeroCarousel({ 
@@ -19,7 +20,8 @@ export default function HeroCarousel({
   showNavigation = false,
   showTitle = false,
   aspectRatio = '4:3',
-  height = 'md' 
+  height = 'md',
+  clickable = true
 }: HeroCarouselProps) {
   const [stories, setStories] = useState<Story[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -103,30 +105,55 @@ export default function HeroCarousel({
     : `/story/${currentStory.id}`
 
   return (
-    <div className={`relative ${heightClasses[height]} mb-8 rounded-xl overflow-hidden group`}>
+    <div className={`relative ${heightClasses[height]} mb-8 rounded-xl overflow-hidden ${clickable ? 'group' : ''}`}>
       {/* Background Image */}
-      <Link href={storyUrl} className="block w-full h-full">
-        <div className="absolute inset-0">
-          {currentStory.image_url ? (
-            <img 
-              src={currentStory.image_url} 
-              alt={currentStory.title || 'Hero Bild'}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              onError={(e) => {
-                console.error('Hero image failed to load:', currentStory.image_url)
-                e.currentTarget.style.display = 'none'
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
-              <BookOpen className="w-24 h-24 text-white opacity-50" />
-            </div>
-          )}
-        </div>
-        
-        {/* Overlay */}
-        <div className={`absolute inset-0 ${showText || showTitle ? 'bg-black/40' : 'bg-black/20'} transition-colors duration-300 group-hover:bg-black/50`} />
-      </Link>
+      {clickable ? (
+        <Link href={storyUrl} className="block w-full h-full">
+          <div className="absolute inset-0">
+            {currentStory.image_url ? (
+              <img 
+                src={currentStory.image_url} 
+                alt={currentStory.title || 'Hero Bild'}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                onError={(e) => {
+                  console.error('Hero image failed to load:', currentStory.image_url)
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
+                <BookOpen className="w-24 h-24 text-white opacity-50" />
+              </div>
+            )}
+          </div>
+          
+          {/* Overlay */}
+          <div className={`absolute inset-0 ${showText || showTitle ? 'bg-black/40' : 'bg-black/20'} transition-colors duration-300 group-hover:bg-black/50`} />
+        </Link>
+      ) : (
+        <>
+          <div className="absolute inset-0">
+            {currentStory.image_url ? (
+              <img 
+                src={currentStory.image_url} 
+                alt={currentStory.title || 'Hero Bild'}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error('Hero image failed to load:', currentStory.image_url)
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
+                <BookOpen className="w-24 h-24 text-white opacity-50" />
+              </div>
+            )}
+          </div>
+          
+          {/* Overlay */}
+          <div className={`absolute inset-0 ${showText || showTitle ? 'bg-black/40' : 'bg-black/20'}`} />
+        </>
+      )}
 
       {/* Story Title Overlay */}
       {showTitle && currentStory && (

@@ -51,47 +51,40 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild className="text-base px-8 py-6">
-              <Link href="/pricing">
-                Preise ansehen
+              <Link href="/stories">
+                Geschichten ansehen
               </Link>
             </Button>
           </div>
 
-          {/* Social Proof */}
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Kostenlose Testgeschichte</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Altersgerechte Inhalte</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>Pädagogisch wertvoll</span>
-            </div>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="mt-16">
-            <p className="text-sm text-muted-foreground mb-6">
-              Vertraut von Eltern und Kindern
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
-              {/* Placeholder for family testimonials */}
-              <div className="text-center">
-                <div className="h-12 w-12 bg-muted rounded-full mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">Familie Schmidt</p>
+          {/* Features */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-4">
+                <BookOpen className="h-6 w-6 text-blue-600" />
               </div>
-              <div className="text-center">
-                <div className="h-12 w-12 bg-muted rounded-full mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">Familie Müller</p>
+              <h3 className="text-lg font-semibold mb-2">Personalisiert</h3>
+              <p className="text-sm text-muted-foreground">
+                Jede Geschichte wird individuell für Ihr Kind erstellt - mit Lieblingscharakteren und passenden Lernzielen.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-4">
+                <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
-              <div className="text-center">
-                <div className="h-12 w-12 bg-muted rounded-full mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">Familie Weber</p>
+              <h3 className="text-lg font-semibold mb-2">Altersgerecht</h3>
+              <p className="text-sm text-muted-foreground">
+                Von 3-12 Jahren - unsere KI passt Sprache, Komplexität und Themen perfekt an das Alter Ihres Kindes an.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-4">
+                <ArrowRight className="h-6 w-6 text-purple-600" />
               </div>
+              <h3 className="text-lg font-semibold mb-2">Sofort verfügbar</h3>
+              <p className="text-sm text-muted-foreground">
+                In wenigen Minuten zur fertigen Geschichte - komplett mit Titelbildern und professioneller Formatierung.
+              </p>
             </div>
           </div>
         </div>

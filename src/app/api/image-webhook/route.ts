@@ -69,10 +69,44 @@ async function downloadAndStoreImage(imageUrl: string, storyId: string): Promise
     
     if (error) {
       console.error('Supabase storage upload error:', error)
+      console.error('Error details:', JSON.stringify(error, null, 2))
+      
       // Try to get more details about the bucket
       const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
-      console.log('Available buckets:', buckets, 'Error:', bucketsError)
-      return null
+      console.log('Available buckets:', buckets?.map(b => ({ name: b.name, public: b.public })))
+      if (bucketsError) console.error('Buckets error:', bucketsError)
+      
+      // Check if bucket exists and try to create it
+      const storyImagesBucket = buckets?.find(bucket => bucket.name === 'story-images')
+      if (!storyImagesBucket) {
+        console.log('story-images bucket not found, trying to create...')
+        const { data: createData, error: createError } = await supabase.storage.createBucket('story-images', {
+          public: true,
+          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+          fileSizeLimit: 10485760 // 10MB
+        })
+        console.log('Bucket creation result:', createData)
+        if (createError) console.error('Bucket creation error:', createError)
+        
+        // Retry upload after bucket creation
+        if (!createError) {
+          const { data: retryData, error: retryError } = await supabase.storage
+            .from('story-images')
+            .upload(fileName, buffer, {
+              contentType: contentType || 'image/jpeg',
+              upsert: false
+            })
+          
+          if (retryError) {
+            console.error('Retry upload failed:', retryError)
+            return null
+          } else {
+            console.log('Retry upload successful:', retryData)
+          }
+        }
+      }
+      
+      if (error) return null
     }
     
     console.log('Upload successful, data:', data)
@@ -138,15 +172,25 @@ export async function POST(request: NextRequest) {
     // Download and store image if URL provided and status is completed
     let finalImageUrl = body.image_url
     if (body.image_url && body.image_status === 'completed') {
-      console.log('Downloading and storing image for story:', body.id)
+      console.log('========================================')
+      console.log('DOWNLOADING AND STORING IMAGE')
+      console.log('Story ID:', body.id)
+      console.log('Original URL:', body.image_url)
+      console.log('========================================')
+      
       const storedImageUrl = await downloadAndStoreImage(body.image_url, body.id)
       if (storedImageUrl) {
         finalImageUrl = storedImageUrl
-        console.log('Image successfully stored, using stored URL')
+        console.log('✅ SUCCESS: Image successfully stored')
+        console.log('New URL:', storedImageUrl)
       } else {
-        console.error('Failed to store image, using original URL as fallback')
+        console.error('❌ FAILED: Could not store image, using original URL as fallback')
+        console.log('Fallback URL:', body.image_url)
         // Keep original URL as fallback
       }
+      console.log('========================================')
+    } else {
+      console.log('Skipping image download - Status:', body.image_status, 'Has URL:', !!body.image_url)
     }
 
     // Update story with image information
