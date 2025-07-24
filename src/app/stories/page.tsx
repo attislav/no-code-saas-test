@@ -15,6 +15,8 @@ export default function StoriesPage() {
   const [filteredStories, setFilteredStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState("all")
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -22,17 +24,30 @@ export default function StoriesPage() {
   }, [])
 
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredStories(stories)
-    } else {
-      const filtered = stories.filter(story => 
+    let filtered = [...stories]
+    
+    // Filter by search term
+    if (searchTerm.trim() !== "") {
+      filtered = filtered.filter(story => 
         story.character.toLowerCase().includes(searchTerm.toLowerCase()) ||
         story.story_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (story.story && story.story.toLowerCase().includes(searchTerm.toLowerCase()))
+        (story.story && story.story.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (story.title && story.title.toLowerCase().includes(searchTerm.toLowerCase()))
       )
-      setFilteredStories(filtered)
     }
-  }, [searchTerm, stories])
+    
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(story => story.story_type === selectedCategory)
+    }
+    
+    // Filter by age group
+    if (selectedAgeGroup !== "all") {
+      filtered = filtered.filter(story => story.age_group === selectedAgeGroup)
+    }
+    
+    setFilteredStories(filtered)
+  }, [searchTerm, selectedCategory, selectedAgeGroup, stories])
 
   const loadStories = async () => {
     try {
@@ -106,18 +121,89 @@ export default function StoriesPage() {
           </p>
         </div>
 
-        {/* Search */}
+        {/* Search and Filters */}
         <Card className="mb-6">
           <CardContent className="p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Geschichten durchsuchen..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Geschichten durchsuchen..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              {/* Category Filter */}
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="all">Alle Kategorien</option>
+                <option value="Abenteuer">Abenteuer</option>
+                <option value="Märchen">Märchen</option>
+                <option value="Lerngeschichte">Lerngeschichte</option>
+                <option value="Gute-Nacht-Geschichte">Gute-Nacht-Geschichte</option>
+                <option value="Freundschaftsgeschichte">Freundschaftsgeschichte</option>
+                <option value="Tiergeschichte">Tiergeschichte</option>
+              </select>
+              
+              {/* Age Group Filter */}
+              <select
+                value={selectedAgeGroup}
+                onChange={(e) => setSelectedAgeGroup(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="all">Alle Altersgruppen</option>
+                <option value="3-4 Jahre">3-4 Jahre</option>
+                <option value="4-6 Jahre">4-6 Jahre</option>
+                <option value="6-8 Jahre">6-8 Jahre</option>
+                <option value="8-10 Jahre">8-10 Jahre</option>
+                <option value="10-12 Jahre">10-12 Jahre</option>
+              </select>
             </div>
+            
+            {/* Active Filters Display */}
+            {(selectedCategory !== "all" || selectedAgeGroup !== "all" || searchTerm) && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {searchTerm && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    Suche: "{searchTerm}"
+                    <button 
+                      onClick={() => setSearchTerm("")}
+                      className="ml-1 hover:text-primary/80"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                {selectedCategory !== "all" && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    Kategorie: {selectedCategory}
+                    <button 
+                      onClick={() => setSelectedCategory("all")}
+                      className="ml-1 hover:text-blue-600"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                {selectedAgeGroup !== "all" && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Alter: {selectedAgeGroup}
+                    <button 
+                      onClick={() => setSelectedAgeGroup("all")}
+                      className="ml-1 hover:text-green-600"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -153,12 +239,31 @@ export default function StoriesPage() {
                 <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                   <Link href={storyUrl} className="block">
                   <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-xl mb-2 hover:text-primary transition-colors">
+                    <div className="flex items-start gap-4">
+                      {/* Titelbild Thumbnail */}
+                      <div className="flex-shrink-0">
+                        {story.image_url ? (
+                          <img 
+                            src={story.image_url} 
+                            alt={story.title || 'Titelbild'}
+                            className="w-24 h-24 object-cover rounded-lg shadow-sm"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                            }}
+                          />
+                        ) : (
+                          <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
+                            <BookOpen className="w-8 h-8 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Story Info */}
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-xl mb-2 hover:text-primary transition-colors truncate">
                           {story.title || `${story.character} - ${story.story_type}`}
                         </CardTitle>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                           <span className="flex items-center gap-1">
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             Fertig
@@ -166,9 +271,10 @@ export default function StoriesPage() {
                           <span>{new Date(story.created_at).toLocaleString('de-DE')}</span>
                           <span>ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit</span>
                         </div>
-                        {story.extra_wishes && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Extrawünsche: {story.extra_wishes}
+                        {/* Story Preview Text */}
+                        {story.story && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {story.story.substring(0, 150)}...
                           </p>
                         )}
                       </div>

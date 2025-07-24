@@ -110,6 +110,34 @@ export default function StoryPage({ params }: StoryPageProps) {
     document.body.removeChild(element)
   }
 
+  // Function to format story text with chapter headings
+  const formatStoryText = (text: string) => {
+    if (!text) return null
+    
+    // Split by common chapter patterns
+    const parts = text.split(/(\n\n|\n)(?=Kapitel \d+|Chapter \d+|Teil \d+|\d+\. Kapitel|\d+\. Teil|### |## |# )/g)
+    
+    return parts.map((part, index) => {
+      // Check if this part looks like a chapter heading
+      const isChapterHeading = /^(Kapitel \d+|Chapter \d+|Teil \d+|\d+\. Kapitel|\d+\. Teil|###? |#+ )/.test(part.trim())
+      
+      if (isChapterHeading) {
+        return (
+          <h3 key={index} className="text-xl font-bold text-primary mt-8 mb-4 first:mt-0">
+            {part.trim().replace(/^#+\s*/, '')}
+          </h3>
+        )
+      } else if (part.trim()) {
+        return (
+          <p key={index} className="whitespace-pre-wrap text-base leading-relaxed mb-4">
+            {part.trim()}
+          </p>
+        )
+      }
+      return null
+    }).filter(Boolean)
+  }
+
   if (isLoading) {
     return (
       <div className="container py-8">
@@ -166,6 +194,22 @@ export default function StoryPage({ params }: StoryPageProps) {
                 <CardTitle className="text-2xl mb-4">
                   {story.title || `${story.character} - ${story.story_type}`}
                 </CardTitle>
+                
+                {/* Title Image */}
+                {story.image_url && (
+                  <div className="mb-6">
+                    <img 
+                      src={story.image_url} 
+                      alt={story.title || 'Titelbild der Geschichte'}
+                      className="w-full max-w-md rounded-lg shadow-md mx-auto"
+                      onError={(e) => {
+                        console.error('Failed to load image:', story.image_url)
+                        e.currentTarget.style.display = 'none'
+                      }}
+                    />
+                  </div>
+                )}
+                
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
@@ -218,8 +262,8 @@ export default function StoryPage({ params }: StoryPageProps) {
           </CardHeader>
           <CardContent>
             <div className="prose prose-lg max-w-none">
-              <div className="whitespace-pre-wrap text-base leading-relaxed">
-                {story.story}
+              <div className="story-content">
+                {formatStoryText(story.story || '')}
               </div>
             </div>
           </CardContent>
