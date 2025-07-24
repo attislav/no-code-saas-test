@@ -1,5 +1,4 @@
-import { supabase, Story } from "@/lib/supabase"
-import { generateCategorySlug } from "@/lib/slug"
+import { supabase } from "@/lib/supabase"
 import { Metadata } from 'next'
 import StoryContent from './story-content'
 

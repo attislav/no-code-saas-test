@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { LoadingSpinner } from "@/common/loading-spinner"
-import { BookOpen, Search, Download, Copy, CheckCircle, ArrowRight } from "lucide-react"
+import { BookOpen, Search, Download, CheckCircle, ArrowRight } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { generateCategorySlug } from "@/lib/slug"
 import Link from "next/link"
@@ -75,14 +75,6 @@ export default function StoriesPage() {
     }
   }
 
-  const copyToClipboard = async (story: string) => {
-    try {
-      await navigator.clipboard.writeText(story)
-      // Could add toast notification here
-    } catch (err) {
-      console.error('Failed to copy:', err)
-    }
-  }
 
   const downloadStory = (story: Story) => {
     const element = document.createElement('a')
@@ -223,7 +215,7 @@ export default function StoriesPage() {
             <CardContent className="text-center py-8">
               <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">
-                {searchTerm ? 'Keine Geschichten gefunden für Ihre Suche.' : 'Noch keine Geschichten vorhanden.'}
+{searchTerm ? 'Keine Geschichten gefunden für Ihre Suche.' : 'Noch keine Geschichten vorhanden.'}
               </p>
             </CardContent>
           </Card>
