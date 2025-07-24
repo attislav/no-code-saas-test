@@ -9,31 +9,35 @@ import { supabase, Story } from "@/lib/supabase"
 import Link from "next/link"
 
 interface TypeFilterPageProps {
-  params: {
+  params: Promise<{
     type: string
-  }
+  }>
 }
 
 export default function TypeFilterPage({ params }: TypeFilterPageProps) {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Decode URL parameter
-  const decodedType = decodeURIComponent(params.type)
+  const [decodedType, setDecodedType] = useState<string>('')
 
   useEffect(() => {
-    loadStories()
-  }, [params.type])
+    const loadParams = async () => {
+      const resolvedParams = await params
+      const type = decodeURIComponent(resolvedParams.type)
+      setDecodedType(type)
+      loadStories(type)
+    }
+    loadParams()
+  }, [params])
 
-  const loadStories = async () => {
+  const loadStories = async (storyType: string) => {
     try {
-      console.log('Loading stories for type:', decodedType)
+      console.log('Loading stories for type:', storyType)
       const { data: storiesData, error } = await supabase
         .from('stories')
         .select('*')
         .eq('status', 'completed')
-        .eq('story_type', decodedType)
+        .eq('story_type', storyType)
         .order('created_at', { ascending: false })
       
       if (error) {
@@ -100,10 +104,10 @@ export default function TypeFilterPage({ params }: TypeFilterPageProps) {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {decodedType}-Geschichten
+            {decodedType || 'Kategorie'}-Geschichten
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Alle Geschichten der Kategorie {decodedType}
+            Alle Geschichten der Kategorie {decodedType || 'diese Kategorie'}
           </p>
         </div>
 
@@ -123,7 +127,7 @@ export default function TypeFilterPage({ params }: TypeFilterPageProps) {
             <CardContent className="text-center py-8">
               <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">
-                Noch keine {decodedType}-Geschichten vorhanden.
+                Noch keine {decodedType || 'Kategorie'}-Geschichten vorhanden.
               </p>
             </CardContent>
           </Card>

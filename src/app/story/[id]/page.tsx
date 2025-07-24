@@ -9,27 +9,33 @@ import { supabase, Story } from "@/lib/supabase"
 import Link from "next/link"
 
 interface StoryPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function StoryPage({ params }: StoryPageProps) {
   const [story, setStory] = useState<Story | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [storyId, setStoryId] = useState<string>('')
 
   useEffect(() => {
-    loadStory()
-  }, [params.id])
+    const loadParams = async () => {
+      const resolvedParams = await params
+      setStoryId(resolvedParams.id)
+      loadStory(resolvedParams.id)
+    }
+    loadParams()
+  }, [params])
 
-  const loadStory = async () => {
+  const loadStory = async (id: string) => {
     try {
-      console.log('Loading story:', params.id)
+      console.log('Loading story:', id)
       const { data: storyData, error } = await supabase
         .from('stories')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', id)
         .single()
       
       if (error) {

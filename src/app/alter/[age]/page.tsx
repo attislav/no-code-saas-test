@@ -9,31 +9,35 @@ import { supabase, Story } from "@/lib/supabase"
 import Link from "next/link"
 
 interface AgeFilterPageProps {
-  params: {
+  params: Promise<{
     age: string
-  }
+  }>
 }
 
 export default function AgeFilterPage({ params }: AgeFilterPageProps) {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Decode URL parameter
-  const decodedAge = decodeURIComponent(params.age)
+  const [decodedAge, setDecodedAge] = useState<string>('')
 
   useEffect(() => {
-    loadStories()
-  }, [params.age])
+    const loadParams = async () => {
+      const resolvedParams = await params
+      const age = decodeURIComponent(resolvedParams.age)
+      setDecodedAge(age)
+      loadStories(age)
+    }
+    loadParams()
+  }, [params])
 
-  const loadStories = async () => {
+  const loadStories = async (ageGroup: string) => {
     try {
-      console.log('Loading stories for age group:', decodedAge)
+      console.log('Loading stories for age group:', ageGroup)
       const { data: storiesData, error } = await supabase
         .from('stories')
         .select('*')
         .eq('status', 'completed')
-        .eq('age_group', decodedAge)
+        .eq('age_group', ageGroup)
         .order('created_at', { ascending: false })
       
       if (error) {
@@ -100,10 +104,10 @@ export default function AgeFilterPage({ params }: AgeFilterPageProps) {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Geschichten für {decodedAge}
+            Geschichten für {decodedAge || 'Altersgruppe'}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Alle Geschichten für die Altersgruppe {decodedAge}
+            Alle Geschichten für die Altersgruppe {decodedAge || 'diese Altersgruppe'}
           </p>
         </div>
 
@@ -123,7 +127,7 @@ export default function AgeFilterPage({ params }: AgeFilterPageProps) {
             <CardContent className="text-center py-8">
               <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">
-                Noch keine Geschichten für die Altersgruppe {decodedAge} vorhanden.
+                Noch keine Geschichten für die Altersgruppe {decodedAge || 'diese Altersgruppe'} vorhanden.
               </p>
             </CardContent>
           </Card>
