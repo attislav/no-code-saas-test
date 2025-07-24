@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.lumalabs.ai)",
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run build:*)",
+      "Bash(vercel:*)",
+      "Bash(git remote add:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(PORT=3001 npm start)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  }
+}
