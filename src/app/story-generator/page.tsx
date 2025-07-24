@@ -213,7 +213,7 @@ export default function StoryGeneratorPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="character">Hauptcharakter *</Label>
+                <Label htmlFor="character" className="text-lg font-bold text-foreground mb-3 block">Hauptcharakter *</Label>
                 <Input
                   id="character"
                   placeholder="z.B. Ein mutiger kleiner Drache"
@@ -223,7 +223,7 @@ export default function StoryGeneratorPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="ageGroup">Alter Zielgruppe *</Label>
+                <Label htmlFor="ageGroup" className="text-lg font-bold text-foreground mb-3 block">Alter Zielgruppe *</Label>
                 <select
                   id="ageGroup"
                   value={ageGroup}
@@ -241,7 +241,7 @@ export default function StoryGeneratorPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="storyType">Art der Geschichte *</Label>
+                <Label htmlFor="storyType" className="text-lg font-bold text-foreground mb-3 block">Art der Geschichte *</Label>
                 <select
                   id="storyType"
                   value={storyType}
@@ -256,7 +256,7 @@ export default function StoryGeneratorPage() {
                 </select>
               </div>
               <div>
-                <Label htmlFor="extraWishes">Extrawünsche</Label>
+                <Label htmlFor="extraWishes" className="text-lg font-bold text-foreground mb-3 block">Extrawünsche</Label>
                 <Input
                   id="extraWishes"
                   placeholder="z.B. Soll eine Lehre enthalten"
@@ -327,6 +327,35 @@ export default function StoryGeneratorPage() {
                         <h3 className="font-semibold mb-2">
                           {generation.title || `${generation.character} - ${generation.story_type}`}
                         </h3>
+                        
+                        {/* Title Image Display */}
+                        {generation.image_url && (
+                          <div className="mb-4">
+                            <img 
+                              src={generation.image_url} 
+                              alt={generation.title || 'Titelbild der Geschichte'}
+                              className="w-full max-w-md rounded-lg shadow-md"
+                              onError={(e) => {
+                                console.error('Failed to load image:', generation.image_url)
+                                e.currentTarget.style.display = 'none'
+                              }}
+                            />
+                          </div>
+                        )}
+                        {generation.image_status === 'generating' && (
+                          <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div className="flex items-center">
+                              <LoadingSpinner className="w-4 h-4 mr-2" />
+                              <span className="text-sm text-yellow-700">Titelbild wird erstellt...</span>
+                            </div>
+                          </div>
+                        )}
+                        {generation.image_status === 'failed' && (
+                          <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200">
+                            <span className="text-sm text-red-700">Titelbild konnte nicht erstellt werden</span>
+                          </div>
+                        )}
+                        
                         <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
                           <div>
                             <span className="font-medium">Zielgruppe:</span> {generation.age_group}

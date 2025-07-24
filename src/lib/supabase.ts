@@ -16,6 +16,8 @@ export interface Story {
   story?: string
   partial_story?: string
   is_partial?: boolean
+  image_url?: string
+  image_status?: 'generating' | 'completed' | 'failed'
   status: 'generating' | 'partial' | 'completed' | 'failed'
   created_at: string
   updated_at: string
