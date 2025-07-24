@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
+// Initialize OpenAI client only when needed to avoid build-time errors
+let openai: OpenAI | null = null
+
+function getOpenAIClient() {
+  if (!openai && process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    })
+  }
+  return openai
+}
 
 const storyTypes = [
   "Abenteuer",
@@ -27,7 +35,8 @@ export async function POST(request: NextRequest) {
     console.log('Generating random story data...')
     
     // Check API key
-    if (!process.env.OPENAI_API_KEY) {
+    const client = getOpenAIClient()
+    if (!client) {
       console.error('OpenAI API key not configured')
       return NextResponse.json(
         { error: 'OpenAI API key not configured' },
@@ -63,7 +72,7 @@ CHARAKTER: Ein Roboter, der ständig seine Farbe wechselt`
     // Add random seed to make each request more unique
     const randomSeed = Math.floor(Math.random() * 1000000)
     
-    const completion = await openai.chat.completions.create({
+    const completion = await client.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
