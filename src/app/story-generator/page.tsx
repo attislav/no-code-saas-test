@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { LoadingSpinner } from "@/common/loading-spinner"
 import { BookOpen, Sparkles, Clock, CheckCircle } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
+import { Typewriter } from "@/components/typewriter"
 
 
 const storyTypes = [
@@ -134,10 +135,11 @@ export default function StoryGeneratorPage() {
         const status = await response.json()
         console.log(`Story ${storyId} status:`, status)
         
+        // Update stories on any status change
+        await loadStories()
+
         if (status.status === 'completed' || status.status === 'failed') {
           console.log(`Story ${storyId} finished with status: ${status.status}`)
-          // Reload all stories from Supabase to get the updated one
-          await loadStories()
           return // Stop polling
         }
 
@@ -147,8 +149,6 @@ export default function StoryGeneratorPage() {
           setTimeout(poll, 30000) // Poll every 30 seconds
         } else {
           console.log(`Max polling attempts reached for story ${storyId}`)
-          // Reload stories to ensure we have the latest state
-          await loadStories()
         }
       } catch (err) {
         console.error(`Polling error for story ${storyId}:`, err)
@@ -166,6 +166,11 @@ export default function StoryGeneratorPage() {
         return <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
           <LoadingSpinner className="w-3 h-3 mr-1" />
           Wird erstellt...
+        </span>
+      case 'partial':
+        return <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+          <LoadingSpinner className="w-3 h-3 mr-1" />
+          Erstes Kapitel
         </span>
       case 'completed':
         return <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
@@ -317,7 +322,7 @@ export default function StoryGeneratorPage() {
                           </span>
                         </div>
                         <h3 className="font-semibold mb-2">
-                          {generation.character} - {generation.story_type}
+                          {generation.title || `${generation.character} - ${generation.story_type}`}
                         </h3>
                         <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
                           <div>
@@ -332,10 +337,28 @@ export default function StoryGeneratorPage() {
                       </div>
                     </div>
                     
+                    {/* Partial Story Display */}
+                    {generation.status === 'partial' && generation.partial_story && (
+                      <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-blue-800">Erstes Kapitel:</h4>
+                          <span className="text-xs text-blue-600">Der Rest wird noch erstellt...</span>
+                        </div>
+                        <div className="prose prose-sm max-w-none">
+                          <Typewriter 
+                            text={generation.partial_story}
+                            speed={25}
+                            className="text-sm leading-relaxed text-blue-900"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Complete Story Display */}
                     {generation.status === 'completed' && generation.story && (
                       <div className="mt-4 p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold">Die Geschichte:</h4>
+                          <h4 className="font-semibold">Die komplette Geschichte:</h4>
                           <div className="flex gap-2">
                             <Button
                               size="sm"
@@ -354,7 +377,7 @@ export default function StoryGeneratorPage() {
                                 const element = document.createElement('a')
                                 const file = new Blob([generation.story || ''], {type: 'text/plain'})
                                 element.href = URL.createObjectURL(file)
-                                element.download = `${generation.character}_${generation.story_type}.txt`
+                                element.download = `${generation.title || generation.character}_${generation.story_type}.txt`
                                 document.body.appendChild(element)
                                 element.click()
                                 document.body.removeChild(element)
@@ -365,7 +388,11 @@ export default function StoryGeneratorPage() {
                           </div>
                         </div>
                         <div className="prose prose-sm max-w-none">
-                          <div className="whitespace-pre-wrap text-sm leading-relaxed">{generation.story}</div>
+                          <Typewriter 
+                            text={generation.story}
+                            speed={15}
+                            className="text-sm leading-relaxed whitespace-pre-wrap"
+                          />
                         </div>
                       </div>
                     )}

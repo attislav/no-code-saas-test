@@ -23,8 +23,11 @@ export async function OPTIONS() {
 
 interface StoryCompleteRequest {
   id: string
-  story: string
-  status: 'completed' | 'failed'
+  title?: string
+  story?: string
+  partial_story?: string
+  status: 'partial' | 'completed' | 'failed'
+  is_partial?: boolean
   error?: string
 }
 
@@ -64,23 +67,29 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(response)
     }
 
-    if (!body.status || !['completed', 'failed'].includes(body.status)) {
+    if (!body.status || !['partial', 'completed', 'failed'].includes(body.status)) {
       console.error('Invalid status in webhook:', body.status)
       const response = NextResponse.json(
-        { error: 'Gültiger Status ist erforderlich (completed oder failed)' },
+        { error: 'Gültiger Status ist erforderlich (partial, completed oder failed)' },
         { status: 400 }
       )
       return addCorsHeaders(response)
     }
 
-    // Store the completed story in Supabase
+    // Store the story (partial or complete) in Supabase
+    const updateData: any = {
+      status: body.status,
+      updated_at: new Date().toISOString()
+    }
+
+    if (body.title) updateData.title = body.title
+    if (body.story) updateData.story = body.story
+    if (body.partial_story) updateData.partial_story = body.partial_story
+    if (body.is_partial !== undefined) updateData.is_partial = body.is_partial
+
     const { error: updateError } = await supabase
       .from('stories')
-      .update({
-        story: body.story,
-        status: body.status,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', body.id)
     
     if (updateError) {
@@ -153,7 +162,10 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.json({
       id: storyData.id,
       status: storyData.status,
+      title: storyData.title,
       story: storyData.story,
+      partial_story: storyData.partial_story,
+      is_partial: storyData.is_partial,
       error: null
     })
     return addCorsHeaders(response)

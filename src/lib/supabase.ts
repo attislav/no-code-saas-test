@@ -11,8 +11,11 @@ export interface Story {
   age_group: string
   story_type: string
   extra_wishes?: string
+  title?: string
   story?: string
-  status: 'generating' | 'completed' | 'failed'
+  partial_story?: string
+  is_partial?: boolean
+  status: 'generating' | 'partial' | 'completed' | 'failed'
   created_at: string
   updated_at: string
 }
