@@ -96,11 +96,14 @@ CHARAKTER: Ein Roboter, der ständig seine Farbe wechselt`
     console.log('OpenAI response:', aiResponse)
 
     // Parse the AI response
-    const characterMatch = aiResponse.match(/CHARAKTER:\s*(.+?)(?=\nEXTRAWUNSCH:|$)/g)
-    const extraWishMatch = aiResponse.match(/EXTRAWUNSCH:\s*(.+?)$/g)
+    const characterMatch = aiResponse.match(/CHARAKTER:\s*(.+?)(?=\nEXTRAWUNSCH:|$)/)
+    const extraWishMatch = aiResponse.match(/EXTRAWUNSCH:\s*(.+?)$/)
 
     const character = characterMatch?.[1]?.trim() || "Ein mutiger kleiner Held"
     const extraWishes = extraWishMatch?.[1]?.trim() || "Soll eine wichtige Lebenslehre enthalten"
+    
+    console.log('Parsed character:', character)
+    console.log('Parsed extraWishes:', extraWishes)
 
     const randomData = {
       character,
