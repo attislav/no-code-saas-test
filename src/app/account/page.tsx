@@ -218,9 +218,13 @@ export default function AccountPage() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Das Löschen Ihres Accounts kann nicht rückgängig gemacht werden. 
-                Alle Ihre Daten werden permanent entfernt.
+                <strong>Wichtig:</strong> Ihr Profil wird anonymisiert, aber Ihre Geschichten bleiben online und werden als &quot;Gelöschter Nutzer&quot; angezeigt. Dies kann nicht rückgängig gemacht werden.
               </p>
+              <div className="bg-orange-50 dark:bg-orange-950 p-3 rounded-md">
+                <p className="text-sm text-orange-800 dark:text-orange-200">
+                  ℹ️ Ihre Geschichten bleiben für die Community verfügbar - nur Ihr Profil wird entfernt.
+                </p>
+              </div>
               
               <Dialog>
                 <DialogTrigger asChild>
@@ -233,8 +237,8 @@ export default function AccountPage() {
                   <DialogHeader>
                     <DialogTitle>Account wirklich löschen?</DialogTitle>
                     <DialogDescription>
-                      Diese Aktion kann nicht rückgängig gemacht werden. Ihr gesamtes Profil, 
-                      alle Ihre Geschichten und Sammlungen werden permanent gelöscht.
+                      Ihr Profil wird anonymisiert und kann nicht wiederhergestellt werden. 
+                      Ihre Geschichten bleiben aber online und werden als &quot;Gelöschter Nutzer&quot; angezeigt.
                     </DialogDescription>
                   </DialogHeader>
                   

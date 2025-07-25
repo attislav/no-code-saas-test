@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
+        .eq('is_deleted', false)
         .single()
 
       if (error && error.code !== 'PGRST116') {
@@ -40,6 +41,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (profileData) {
         setProfile(profileData)
       } else {
+        // Check if user has deleted profile
+        const { data: deletedProfile } = await supabase
+          .from('user_profiles')
+          .select('is_deleted')
+          .eq('user_id', userId)
+          .single()
+        
+        if (deletedProfile?.is_deleted) {
+          // User account was deleted, sign them out
+          await signOut()
+          return
+        }
+        
         // Create profile if it doesn't exist
         await createUserProfile(userId)
       }
@@ -161,25 +175,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const deleteAccount = async () => {
-    if (!user) {
+    if (!user || !profile) {
       return { error: new Error('Not authenticated') }
     }
 
     try {
-      // Delete user profile and related data
+      // Soft delete: Anonymize user data but keep stories intact
       const { error: profileError } = await supabase
         .from('user_profiles')
-        .delete()
+        .update({
+          is_deleted: true,
+          deleted_at: new Date().toISOString(),
+          display_name: 'Gelöschter Nutzer',
+          username: null,
+          bio: null,
+          avatar_url: null
+        })
         .eq('user_id', user.id)
 
       if (profileError) {
         return { error: profileError }
       }
 
-      // Note: Supabase doesn't allow deleting auth users from client
-      // This would need to be handled by a server function or admin API
-      // For now, we just clear the profile data
-      
+      // Sign out user
       await signOut()
       return { error: null }
     } catch (err) {

@@ -12,6 +12,8 @@ export interface UserProfile {
   username?: string
   avatar_url?: string
   bio?: string
+  is_deleted: boolean
+  deleted_at?: string
   created_at: string
   updated_at: string
 }
