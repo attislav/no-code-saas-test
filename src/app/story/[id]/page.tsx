@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/common/loading-spinner"
 import { ArrowLeft, Copy, Download, Clock, Calendar } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
+import { getAuthorDisplay } from "@/lib/user-utils"
 import Link from "next/link"
 
 interface StoryPageProps {
@@ -34,7 +35,10 @@ export default function StoryPage({ params }: StoryPageProps) {
       console.log('Loading story:', id)
       const { data: storyData, error } = await supabase
         .from('stories')
-        .select('*')
+        .select(`
+          *,
+          author:user_profiles!author_id(*)
+        `)
         .eq('id', id)
         .single()
       
@@ -138,6 +142,7 @@ export default function StoryPage({ params }: StoryPageProps) {
                     <Clock className="w-4 h-4" />
                     ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit
                   </div>
+                  <span>von {getAuthorDisplay(story.author)}</span>
                 </div>
                 <div className="flex gap-2 mb-4">
                   <span className="inline-flex items-center px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">

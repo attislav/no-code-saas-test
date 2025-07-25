@@ -29,3 +29,10 @@ export function getBio(profile: UserProfile | null | undefined): string | null {
   if (!profile || profile.is_deleted) return null
   return profile.bio || null
 }
+
+// Helper function to get author display for stories
+export function getAuthorDisplay(profile: UserProfile | null | undefined): string {
+  if (!profile) return 'Anonymer Autor'
+  if (profile.is_deleted) return 'Gelöschter Nutzer'
+  return profile.display_name || 'Unbekannter Autor'
+}

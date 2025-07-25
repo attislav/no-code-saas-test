@@ -8,6 +8,7 @@ import { LoadingSpinner } from "@/common/loading-spinner"
 import { BookOpen, Search, CheckCircle, ArrowRight } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { generateCategorySlug } from "@/lib/slug"
+import { getAuthorDisplay } from "@/lib/user-utils"
 import Link from "next/link"
 
 export default function StoriesPage() {
@@ -54,7 +55,10 @@ export default function StoriesPage() {
       console.log('Loading all stories from Supabase...')
       const { data: storiesData, error } = await supabase
         .from('stories')
-        .select('*')
+        .select(`
+          *,
+          author:user_profiles!author_id(*)
+        `)
         .eq('status', 'completed')
         .order('created_at', { ascending: false })
       
@@ -253,6 +257,9 @@ export default function StoriesPage() {
                           </span>
                           <span>{new Date(story.created_at).toLocaleString('de-DE')}</span>
                           <span>ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit</span>
+                        </div>
+                        <div className="text-sm text-muted-foreground mb-2">
+                          von {getAuthorDisplay(story.author)}
                         </div>
                         {/* Story Preview Text */}
                         {story.story && (

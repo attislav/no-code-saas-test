@@ -12,6 +12,7 @@ interface GenerateStoryRequest {
   ageGroup: string
   extraWishes: string
   storyType: string
+  authorId?: string | null
 }
 
 export async function POST(request: NextRequest) {
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
         age_group: body.ageGroup,
         story_type: body.storyType,
         extra_wishes: body.extraWishes || null,
+        author_id: body.authorId || null,
         status: 'generating'
       })
       .select()

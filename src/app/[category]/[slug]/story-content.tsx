@@ -7,6 +7,7 @@ import { LoadingSpinner } from "@/common/loading-spinner"
 import { ArrowLeft, Clock, Calendar, BookOpen } from "lucide-react"
 import { supabase, Story } from "@/lib/supabase"
 import { generateCategorySlug } from "@/lib/slug"
+import { getAuthorDisplay } from "@/lib/user-utils"
 import Link from "next/link"
 
 interface StoryContentProps {
@@ -40,10 +41,13 @@ export default function StoryContent({ params }: StoryContentProps) {
     try {
       console.log('Loading story:', { category, slug })
       
-      // First try to find by slug
+      // First try to find by slug with author info
       const { data: storyData, error } = await supabase
         .from('stories')
-        .select('*')
+        .select(`
+          *,
+          author:user_profiles!author_id(*)
+        `)
         .eq('slug', slug)
         .single()
       
@@ -54,7 +58,10 @@ export default function StoryContent({ params }: StoryContentProps) {
         console.log('Story not found by slug, trying to find by category...')
         const { data: storiesByCategory, error: categoryError } = await supabase
           .from('stories')
-          .select('*')
+          .select(`
+            *,
+            author:user_profiles!author_id(*)
+          `)
           .eq('status', 'completed')
           .order('created_at', { ascending: false })
         
@@ -252,6 +259,10 @@ export default function StoryContent({ params }: StoryContentProps) {
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
                     ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <BookOpen className="w-4 h-4" />
+                    von {getAuthorDisplay(story.author)}
                   </div>
                 </div>
                 

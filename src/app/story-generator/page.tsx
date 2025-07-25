@@ -12,6 +12,7 @@ import { Typewriter } from "@/components/typewriter"
 import { generateCategorySlug } from "@/lib/slug"
 import { useRouter } from "next/navigation"
 import HeroCarousel from "@/components/hero-carousel"
+import { useAuth } from "@/contexts/auth-context"
 
 
 const storyTypes = [
@@ -43,6 +44,7 @@ export default function StoryGeneratorPage() {
   const [isGeneratingRandom, setIsGeneratingRandom] = useState(false)
   const router = useRouter()
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+  const { user, profile } = useAuth()
 
   // Don't load any old stories on mount - only show newly generated ones
   useEffect(() => {
@@ -96,6 +98,7 @@ export default function StoryGeneratorPage() {
           ageGroup,
           extraWishes: extraWishes.trim(),
           storyType,
+          authorId: profile?.id || null,
         }),
       })
 
