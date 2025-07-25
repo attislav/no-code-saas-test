@@ -26,6 +26,8 @@ export default function HeroCarousel({
   const [stories, setStories] = useState<Story[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   useEffect(() => {
     loadHeroStories()
@@ -69,6 +71,31 @@ export default function HeroCarousel({
     setCurrentIndex((prev) => (prev - 1 + stories.length) % stories.length)
   }
 
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+    
+    if (isLeftSwipe && stories.length > 1) {
+      nextStory()
+    }
+    if (isRightSwipe && stories.length > 1) {
+      prevStory()
+    }
+  }
+
   const currentStory = stories[currentIndex]
 
   const heightClasses = {
@@ -105,7 +132,12 @@ export default function HeroCarousel({
     : `/story/${currentStory.id}`
 
   return (
-    <div className={`relative ${heightClasses[height]} mb-8 rounded-xl overflow-hidden ${clickable ? 'group' : ''}`}>
+    <div 
+      className={`relative ${heightClasses[height]} mb-8 rounded-xl overflow-hidden ${clickable ? 'group' : ''}`}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Background Image */}
       {clickable ? (
         <Link href={storyUrl} className="block w-full h-full">

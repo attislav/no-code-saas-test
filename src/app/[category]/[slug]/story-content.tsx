@@ -287,11 +287,11 @@ export default function StoryContent({ params }: StoryContentProps) {
                     .story-content h2 {
                       font-size: 1.75rem !important;
                       font-weight: bold !important;
-                      color: #1f2937 !important;
+                      color: var(--foreground) !important;
                       margin-top: 2rem !important;
                       margin-bottom: 1rem !important;
                       padding-bottom: 0.5rem !important;
-                      border-bottom: 2px solid #e5e7eb !important;
+                      border-bottom: 2px solid var(--border) !important;
                     }
                     .story-content p {
                       margin-bottom: 1.5rem !important;
