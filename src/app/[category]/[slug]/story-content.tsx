@@ -262,7 +262,16 @@ export default function StoryContent({ params }: StoryContentProps) {
                   </div>
                   <div className="flex items-center gap-1">
                     <BookOpen className="w-4 h-4" />
-                    von {getAuthorDisplay(story.author)}
+                    von {story.author && story.author.username && !story.author.is_deleted ? (
+                      <Link 
+                        href={`/profile/${story.author.username}`}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {getAuthorDisplay(story.author)}
+                      </Link>
+                    ) : (
+                      getAuthorDisplay(story.author)
+                    )}
                   </div>
                 </div>
                 

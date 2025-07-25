@@ -122,6 +122,27 @@ export default function AccountPage() {
           </Link>
         </div>
 
+        {/* Profile Link */}
+        {profile && profile.username && (
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold">Ihr öffentliches Profil</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Sehen Sie, wie andere Ihr Profil und Ihre Geschichten sehen
+                  </p>
+                </div>
+                <Link href={`/profile/${profile.username}`}>
+                  <Button variant="outline">
+                    Profil ansehen
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Profile Settings */}
         <Card>
           <CardHeader>

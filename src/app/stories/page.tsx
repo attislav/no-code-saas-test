@@ -259,7 +259,17 @@ export default function StoriesPage() {
                           <span>ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit</span>
                         </div>
                         <div className="text-sm text-muted-foreground mb-2">
-                          von {getAuthorDisplay(story.author)}
+                          von {story.author && story.author.username && !story.author.is_deleted ? (
+                            <Link 
+                              href={`/profile/${story.author.username}`}
+                              className="hover:text-primary transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {getAuthorDisplay(story.author)}
+                            </Link>
+                          ) : (
+                            getAuthorDisplay(story.author)
+                          )}
                         </div>
                         {/* Story Preview Text */}
                         {story.story && (

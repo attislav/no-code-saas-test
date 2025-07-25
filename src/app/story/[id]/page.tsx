@@ -142,7 +142,16 @@ export default function StoryPage({ params }: StoryPageProps) {
                     <Clock className="w-4 h-4" />
                     ca. {Math.ceil((story.story?.length || 0) / 1000)} Min. Lesezeit
                   </div>
-                  <span>von {getAuthorDisplay(story.author)}</span>
+                  <span>von {story.author && story.author.username && !story.author.is_deleted ? (
+                    <Link 
+                      href={`/profile/${story.author.username}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {getAuthorDisplay(story.author)}
+                    </Link>
+                  ) : (
+                    getAuthorDisplay(story.author)
+                  )}</span>
                 </div>
                 <div className="flex gap-2 mb-4">
                   <span className="inline-flex items-center px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
