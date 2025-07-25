@@ -1,12 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { Menu, X, User, LogOut } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "@/common/theme-toggle"
+import { AuthDialog } from "@/components/auth/auth-dialog"
+import { useAuth } from "@/contexts/auth-context"
 import { APP_NAME } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
@@ -16,6 +19,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, signOut, isLoading } = useAuth()
 
   const navigation = [
     { name: "Geschichte erstellen", href: "/story-generator" },
@@ -51,12 +55,33 @@ export function Header({ className }: HeaderProps) {
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
           <ThemeToggle />
-          <Button variant="ghost" asChild>
-            <Link href="/login">Anmelden</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/register">Kostenlos starten</Link>
-          </Button>
+          {isLoading ? (
+            <div className="h-9 w-20 bg-muted animate-pulse rounded-md" />
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {user.email?.split('@')[0]}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Abmelden
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <AuthDialog defaultMode="login">
+                <Button variant="ghost">Anmelden</Button>
+              </AuthDialog>
+              <AuthDialog defaultMode="register">
+                <Button>Kostenlos starten</Button>
+              </AuthDialog>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -99,16 +124,43 @@ export function Header({ className }: HeaderProps) {
                   <span className="text-sm font-medium">Theme</span>
                   <ThemeToggle />
                 </div>
-                <Button variant="ghost" asChild className="justify-start">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>
-                    Anmelden
-                  </Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register" onClick={() => setIsOpen(false)}>
-                    Kostenlos starten
-                  </Link>
-                </Button>
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <div className="h-9 bg-muted animate-pulse rounded-md" />
+                    <div className="h-9 bg-muted animate-pulse rounded-md" />
+                  </div>
+                ) : user ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 p-2 text-sm">
+                      <User className="h-4 w-4" />
+                      {user.email}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start w-full"
+                      onClick={() => {
+                        signOut()
+                        setIsOpen(false)
+                      }}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Abmelden
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <AuthDialog defaultMode="login">
+                      <Button variant="ghost" className="justify-start w-full">
+                        Anmelden
+                      </Button>
+                    </AuthDialog>
+                    <AuthDialog defaultMode="register">
+                      <Button className="w-full">
+                        Kostenlos starten
+                      </Button>
+                    </AuthDialog>
+                  </>
+                )}
               </div>
             </div>
           </SheetContent>
