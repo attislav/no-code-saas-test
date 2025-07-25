@@ -5,6 +5,17 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+export interface UserProfile {
+  id: string
+  user_id: string
+  display_name: string
+  username?: string
+  avatar_url?: string
+  bio?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Story {
   id: string
   character: string
@@ -19,6 +30,8 @@ export interface Story {
   image_url?: string
   image_status?: 'generating' | 'completed' | 'failed'
   status: 'generating' | 'partial' | 'completed' | 'failed'
+  author_id?: string
+  author?: UserProfile
   created_at: string
   updated_at: string
 }

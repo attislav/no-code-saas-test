@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, X, User, LogOut } from "lucide-react"
+import { Menu, X, User, LogOut, Settings } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { user, signOut, isLoading } = useAuth()
+  const { user, profile, signOut, isLoading } = useAuth()
 
   const navigation = [
     { name: "Geschichte erstellen", href: "/story-generator" },
@@ -62,10 +62,16 @@ export function Header({ className }: HeaderProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  {user.email?.split('@')[0]}
+                  {profile?.display_name || user.email?.split('@')[0]}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/account">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Account-Einstellungen
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Abmelden
@@ -133,8 +139,18 @@ export function Header({ className }: HeaderProps) {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 p-2 text-sm">
                       <User className="h-4 w-4" />
-                      {user.email}
+                      {profile?.display_name || user.email?.split('@')[0]}
                     </div>
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start w-full"
+                      asChild
+                    >
+                      <Link href="/account" onClick={() => setIsOpen(false)}>
+                        <Settings className="h-4 w-4 mr-2" />
+                        Account-Einstellungen
+                      </Link>
+                    </Button>
                     <Button 
                       variant="ghost" 
                       className="justify-start w-full"
