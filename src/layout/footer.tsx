@@ -1,7 +1,6 @@
 import Link from "next/link"
-import { Github, Linkedin, Twitter, Youtube } from "lucide-react"
 
-import { APP_NAME, COMPANY_NAME, SOCIAL_LINKS, FOOTER_NAVIGATION } from "@/lib/constants"
+import { APP_NAME, COMPANY_NAME, FOOTER_NAVIGATION } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 interface FooterProps {
@@ -10,13 +9,6 @@ interface FooterProps {
 
 export function Footer({ className }: FooterProps) {
   const currentYear = new Date().getFullYear()
-
-  const socialLinks = [
-    { name: "Twitter", href: SOCIAL_LINKS.twitter, icon: Twitter },
-    { name: "LinkedIn", href: SOCIAL_LINKS.linkedin, icon: Linkedin },
-    { name: "GitHub", href: SOCIAL_LINKS.github, icon: Github },
-    { name: "YouTube", href: SOCIAL_LINKS.youtube, icon: Youtube },
-  ]
 
   return (
     <footer className={cn("border-t bg-background", className)}>
@@ -31,27 +23,19 @@ export function Footer({ className }: FooterProps) {
               <span className="font-bold text-xl">{APP_NAME}</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
-              SaaS schneller bauen. Die moderne Plattform für Ihre SaaS-Anwendung.
+              Magische Kindergeschichten mit künstlicher Intelligenz erstellen. 
+              Personalisiert, altersgerecht und voller Fantasie.
             </p>
             <div className="flex space-x-4">
-              {socialLinks.map((social) => (
-                <Link
-                  key={social.name}
-                  href={social.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <social.icon className="h-5 w-5" />
-                  <span className="sr-only">{social.name}</span>
-                </Link>
-              ))}
+              <span className="text-sm text-muted-foreground">
+                🎪 Wo Fantasie auf Technologie trifft
+              </span>
             </div>
           </div>
 
           {/* Product Links */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Produkt</h3>
+            <h3 className="text-sm font-semibold">Geschichten</h3>
             <ul className="space-y-2">
               {FOOTER_NAVIGATION.product.map((item) => (
                 <li key={item.title}>
@@ -122,7 +106,7 @@ export function Footer({ className }: FooterProps) {
             </div>
             
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <span>Made with ❤️ in Berlin</span>
+              <span>Made with ❤️ in Köln</span>
             </div>
           </div>
         </div>

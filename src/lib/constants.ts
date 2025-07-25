@@ -8,13 +8,13 @@ export const APP_URL = 'https://saasify.com';
 export const APP_VERSION = '1.0.0';
 
 // Company Info
-export const COMPANY_NAME = 'SaaSify GmbH';
-export const COMPANY_EMAIL = 'hello@saasify.com';
-export const COMPANY_PHONE = '+49 30 12345678';
+export const COMPANY_NAME = 'StoryMagic';
+export const COMPANY_EMAIL = 'hallo@storymagic.de';
+export const COMPANY_PHONE = '+49 221 12345678';
 export const COMPANY_ADDRESS = {
   street: 'Musterstraße 123',
-  city: 'Berlin',
-  postalCode: '10115',
+  city: 'Köln',
+  postalCode: '50667',
   country: 'Deutschland'
 };
 
@@ -55,28 +55,28 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
 
 export const FOOTER_NAVIGATION = {
   product: [
-    { title: 'Features', href: '/features' },
-    { title: 'Pricing', href: '/pricing' },
-    { title: 'API', href: '/api' },
-    { title: 'Integrations', href: '/integrations' }
+    { title: 'Geschichte erstellen', href: '/story-generator' },
+    { title: 'Alle Geschichten', href: '/stories' },
+    { title: 'Kategorien', href: '/kategorien' },
+    { title: 'Altersgruppen', href: '/alter' }
   ],
   company: [
-    { title: 'About', href: '/about' },
+    { title: 'Über uns', href: '/about' },
     { title: 'Blog', href: '/blog' },
-    { title: 'Careers', href: '/careers' },
-    { title: 'Contact', href: '/contact' }
+    { title: 'Kontakt', href: '/contact' },
+    { title: 'Jobs', href: '/jobs' }
   ],
   support: [
-    { title: 'Help Center', href: '/help' },
-    { title: 'Documentation', href: '/docs' },
-    { title: 'Status', href: '/status' },
+    { title: 'Hilfe', href: '/help' },
+    { title: 'FAQ', href: '/faq' },
+    { title: 'Feedback', href: '/feedback' },
     { title: 'Community', href: '/community' }
   ],
   legal: [
-    { title: 'Privacy Policy', href: '/privacy' },
-    { title: 'Terms of Service', href: '/terms' },
-    { title: 'Cookie Policy', href: '/cookies' },
-    { title: 'GDPR', href: '/gdpr' }
+    { title: 'Datenschutz', href: '/privacy' },
+    { title: 'Impressum', href: '/impressum' },
+    { title: 'AGB', href: '/terms' },
+    { title: 'Cookie-Richtlinie', href: '/cookies' }
   ]
 };
 
