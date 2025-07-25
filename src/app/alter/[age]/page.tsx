@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: AgeFilterPageProps): Promise<
     const title = `Geschichten für ${age} - StoryMagic`
     const description = `Entdecken Sie ${storyCount} magische Kindergeschichten für ${age}. KI-generierte, altersgerechte Geschichten speziell für diese Altersgruppe.`
     
-    const canonicalUrl = `https://no-code-saas-test.onrender.com/alter/${encodeURIComponent(age)}`
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+    const canonicalUrl = `${baseUrl}/alter/${encodeURIComponent(age)}`;
     
     return {
       title,
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: AgeFilterPageProps): Promise<
         siteName: 'StoryMagic',
         type: 'website',
         images: [{
-          url: 'https://no-code-saas-test.onrender.com/og-default.jpg',
+          url: `${baseUrl}/og-default.jpg`,
           width: 1200,
           height: 630,
           alt: `Geschichten für ${age} - StoryMagic`,
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: AgeFilterPageProps): Promise<
         card: 'summary_large_image',
         title,
         description,
-        images: ['https://no-code-saas-test.onrender.com/twitter-default.jpg'],
+        images: [`${baseUrl}/twitter-default.jpg`],
       },
       alternates: {
         canonical: canonicalUrl,

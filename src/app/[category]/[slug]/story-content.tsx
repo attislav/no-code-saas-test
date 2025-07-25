@@ -162,6 +162,7 @@ export default function StoryContent({ params }: StoryContentProps) {
     )
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
   // Generate structured data for SEO
   const structuredData = story ? {
     "@context": "https://schema.org",
@@ -170,7 +171,7 @@ export default function StoryContent({ params }: StoryContentProps) {
     "description": story.story 
       ? story.story.replace(/<[^>]*>/g, '').substring(0, 200) + '...'
       : `Eine ${story.story_type} für ${story.age_group} über ${story.character}`,
-    "image": story.image_url || "https://no-code-saas-test.onrender.com/og-default.jpg",
+    "image": story.image_url || `${baseUrl}/og-default.jpg`,
     "author": {
       "@type": "Organization",
       "name": "StoryMagic KI"
@@ -180,14 +181,14 @@ export default function StoryContent({ params }: StoryContentProps) {
       "name": "StoryMagic",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://no-code-saas-test.onrender.com/logo.png"
+        "url": `${baseUrl}/logo.png`
       }
     },
     "datePublished": story.created_at,
     "dateModified": story.updated_at,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://no-code-saas-test.onrender.com/${generateCategorySlug(story.story_type)}/${story.slug}`
+      "@id": `${baseUrl}/${generateCategorySlug(story.story_type)}/${story.slug}`
     },
     "genre": story.story_type,
     "audience": {

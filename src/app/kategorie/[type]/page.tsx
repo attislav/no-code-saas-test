@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: TypeFilterPageProps): Promise
     const title = `${type}-Geschichten - StoryMagic`
     const description = `Entdecken Sie ${storyCount} magische ${type}-Geschichten für Kinder. KI-generierte Kindergeschichten in der Kategorie ${type}.`
     
-    const canonicalUrl = `https://no-code-saas-test.onrender.com/kategorie/${encodeURIComponent(type)}`
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+    const canonicalUrl = `${baseUrl}/kategorie/${encodeURIComponent(type)}`;
     
     return {
       title,
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: TypeFilterPageProps): Promise
         siteName: 'StoryMagic',
         type: 'website',
         images: [{
-          url: 'https://no-code-saas-test.onrender.com/og-default.jpg',
+          url: `${baseUrl}/og-default.jpg`,
           width: 1200,
           height: 630,
           alt: `${type}-Geschichten - StoryMagic`,
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }: TypeFilterPageProps): Promise
         card: 'summary_large_image',
         title,
         description,
-        images: ['https://no-code-saas-test.onrender.com/twitter-default.jpg'],
+        images: [`${baseUrl}/twitter-default.jpg`],
       },
       alternates: {
         canonical: canonicalUrl,

@@ -35,7 +35,8 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
       ? story.story.replace(/<[^>]*>/g, '').substring(0, 160) + '...'
       : `Eine ${story.story_type} für ${story.age_group} über ${story.character}`
     
-    const canonicalUrl = `https://no-code-saas-test.onrender.com/${encodeURIComponent(category)}/${slug}`
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+    const canonicalUrl = `${baseUrl}/${encodeURIComponent(category)}/${slug}`;
     
     return {
       title: `${title} - StoryMagic`,
@@ -66,7 +67,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
           }
         ] : [
           {
-            url: 'https://no-code-saas-test.onrender.com/og-default.jpg',
+            url: `${baseUrl}/og-default.jpg`,
             width: 1200,
             height: 630,
             alt: 'StoryMagic - Magische Kindergeschichten',
@@ -79,7 +80,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
         card: 'summary_large_image',
         title: `${title} - StoryMagic`,
         description,
-        images: story.image_url ? [story.image_url] : ['https://no-code-saas-test.onrender.com/twitter-default.jpg'],
+        images: story.image_url ? [story.image_url] : [`${baseUrl}/twitter-default.jpg`],
       },
       alternates: {
         canonical: canonicalUrl,

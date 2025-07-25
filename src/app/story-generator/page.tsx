@@ -42,6 +42,7 @@ export default function StoryGeneratorPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isGeneratingRandom, setIsGeneratingRandom] = useState(false)
   const router = useRouter()
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
 
   // Don't load any old stories on mount - only show newly generated ones
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function StoryGeneratorPage() {
     setError(null)
 
     try {
-      const response = await fetch('https://no-code-saas-test.onrender.com/api/generate-story', {
+      const response = await fetch(`${baseUrl}/api/generate-story`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ export default function StoryGeneratorPage() {
       try {
         console.log(`Polling attempt ${attempts + 1}/${maxAttempts} for story ${storyId}`)
         
-        const response = await fetch(`https://no-code-saas-test.onrender.com/api/webhook?id=${storyId}`)
+        const response = await fetch(`${baseUrl}/api/webhook?id=${storyId}`)
         
         if (!response.ok) {
           console.error(`Polling failed with status ${response.status}:`, response.statusText)
