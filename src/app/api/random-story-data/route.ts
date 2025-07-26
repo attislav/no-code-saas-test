@@ -19,7 +19,8 @@ const storyTypes = [
   "Lerngeschichte",
   "Gute-Nacht-Geschichte",
   "Freundschaftsgeschichte",
-  "Tiergeschichte"
+  "Tiergeschichte",
+  "Traumreise"
 ]
 
 const ageGroups = [
@@ -29,6 +30,8 @@ const ageGroups = [
   "8-10 Jahre",
   "10-12 Jahre"
 ]
+
+const readingTimes = ["short", "medium", "long"]
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,11 +47,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Randomly select age group and story type
+    // Randomly select age group, story type, and reading time
     const randomAgeGroup = ageGroups[Math.floor(Math.random() * ageGroups.length)]
     const randomStoryType = storyTypes[Math.floor(Math.random() * storyTypes.length)]
+    const randomReadingTime = readingTimes[Math.floor(Math.random() * readingTimes.length)]
     
-    console.log('Random selections:', { randomAgeGroup, randomStoryType })
+    console.log('Random selections:', { randomAgeGroup, randomStoryType, randomReadingTime })
 
     // Generate creative character and extra wishes using OpenAI
     const prompt = `Erstelle für eine Kindergeschichte:
@@ -109,6 +113,7 @@ CHARAKTER: Ein Roboter, der ständig seine Farbe wechselt`
       character,
       ageGroup: randomAgeGroup,
       storyType: randomStoryType,
+      readingTime: randomReadingTime,
       extraWishes
     }
 
@@ -127,6 +132,7 @@ CHARAKTER: Ein Roboter, der ständig seine Farbe wechselt`
       character: "Ein mutiger kleiner Abenteurer",
       ageGroup: ageGroups[Math.floor(Math.random() * ageGroups.length)],
       storyType: storyTypes[Math.floor(Math.random() * storyTypes.length)],
+      readingTime: readingTimes[Math.floor(Math.random() * readingTimes.length)],
       extraWishes: "Soll eine wichtige Lebenslehre enthalten"
     }
 

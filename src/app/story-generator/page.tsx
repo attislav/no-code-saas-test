@@ -21,7 +21,8 @@ const storyTypes = [
   "Lerngeschichte",
   "Gute-Nacht-Geschichte",
   "Freundschaftsgeschichte",
-  "Tiergeschichte"
+  "Tiergeschichte",
+  "Traumreise"
 ]
 
 const ageGroups = [
@@ -32,11 +33,18 @@ const ageGroups = [
   "10-12 Jahre"
 ]
 
+const readingTimes = [
+  { value: "short", label: "Kurz (1-3 Min.)", description: "Etwa 1-2 Kapitel", minutes: 2 },
+  { value: "medium", label: "Mittel (4-7 Min.)", description: "Etwa 3-4 Kapitel", minutes: 5 },
+  { value: "long", label: "Lang (8+ Min.)", description: "Etwa 5-6 Kapitel", minutes: 10 }
+]
+
 export default function StoryGeneratorPage() {
   const [character, setCharacter] = useState("")
   const [ageGroup, setAgeGroup] = useState("")
   const [extraWishes, setExtraWishes] = useState("")
   const [storyType, setStoryType] = useState("")
+  const [readingTime, setReadingTime] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generations, setGenerations] = useState<Story[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -79,7 +87,7 @@ export default function StoryGeneratorPage() {
   }
 
   const handleGenerate = async () => {
-    if (!character.trim() || !ageGroup || !storyType) {
+    if (!character.trim() || !ageGroup || !storyType || !readingTime) {
       setError("Bitte füllen Sie alle Pflichtfelder aus")
       return
     }
@@ -98,6 +106,7 @@ export default function StoryGeneratorPage() {
           ageGroup,
           extraWishes: extraWishes.trim(),
           storyType,
+          readingTime,
           authorId: profile?.id || null,
         }),
       })
@@ -120,6 +129,7 @@ export default function StoryGeneratorPage() {
       setAgeGroup("")
       setExtraWishes("")
       setStoryType("")
+      setReadingTime("")
       
     } catch (err) {
       console.error('Story generation error:', err)
@@ -219,6 +229,7 @@ export default function StoryGeneratorPage() {
         setAgeGroup(result.data.ageGroup)
         setStoryType(result.data.storyType)
         setExtraWishes(result.data.extraWishes)
+        setReadingTime(result.data.readingTime || "medium")
         
         console.log('Random story data filled:', result.data)
       } else {
@@ -336,15 +347,38 @@ export default function StoryGeneratorPage() {
                 </select>
               </div>
               <div>
-                <Label htmlFor="extraWishes" className="text-lg font-bold text-foreground mb-3 block">Extrawünsche</Label>
-                <Input
-                  id="extraWishes"
-                  placeholder="z.B. Soll eine Lehre enthalten"
-                  value={extraWishes}
-                  onChange={(e) => setExtraWishes(e.target.value)}
+                <Label htmlFor="readingTime" className="text-lg font-bold text-foreground mb-3 block">Geschichtenlänge *</Label>
+                <select
+                  id="readingTime"
+                  value={readingTime}
+                  onChange={(e) => setReadingTime(e.target.value)}
                   disabled={isGenerating}
-                />
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="">Wählen Sie die Länge...</option>
+                  {readingTimes.map(time => (
+                    <option key={time.value} value={time.value}>
+                      {time.label}
+                    </option>
+                  ))}
+                </select>
+                {readingTime && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {readingTimes.find(t => t.value === readingTime)?.description}
+                  </p>
+                )}
               </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="extraWishes" className="text-lg font-bold text-foreground mb-3 block">Extrawünsche</Label>
+              <Input
+                id="extraWishes"
+                placeholder="z.B. Soll eine Lehre enthalten oder bestimmte Werte vermitteln"
+                value={extraWishes}
+                onChange={(e) => setExtraWishes(e.target.value)}
+                disabled={isGenerating}
+              />
             </div>
 
             {error && (

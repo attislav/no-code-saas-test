@@ -59,29 +59,29 @@ export function HeroSection() {
 
           {/* Features */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-4">
-                <BookOpen className="h-6 w-6 text-blue-600" />
+            <div className="text-center group">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Personalisiert</h3>
+              <h3 className="text-lg font-semibold mb-2 text-blue-700 dark:text-blue-300">Personalisiert</h3>
               <p className="text-sm text-muted-foreground">
                 Jede Geschichte wird individuell für Ihr Kind erstellt - mit Lieblingscharakteren und passenden Lernzielen.
               </p>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-4">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="text-center group">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Altersgerecht</h3>
+              <h3 className="text-lg font-semibold mb-2 text-green-700 dark:text-green-300">Altersgerecht</h3>
               <p className="text-sm text-muted-foreground">
                 Von 3-12 Jahren - unsere KI passt Sprache, Komplexität und Themen perfekt an das Alter Ihres Kindes an.
               </p>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-4">
-                <ArrowRight className="h-6 w-6 text-purple-600" />
+            <div className="text-center group">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl mx-auto mb-4 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <ArrowRight className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Sofort verfügbar</h3>
+              <h3 className="text-lg font-semibold mb-2 text-purple-700 dark:text-purple-300">Sofort verfügbar</h3>
               <p className="text-sm text-muted-foreground">
                 In wenigen Minuten zur fertigen Geschichte - komplett mit Titelbildern und professioneller Formatierung.
               </p>

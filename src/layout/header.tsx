@@ -1,12 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, X, User, LogOut, Settings } from "lucide-react"
+import { Menu, X, User, LogOut, Settings, ChevronDown } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "@/common/theme-toggle"
 import { AuthDialog } from "@/components/auth/auth-dialog"
 import { useAuth } from "@/contexts/auth-context"
@@ -23,7 +23,18 @@ export function Header({ className }: HeaderProps) {
 
   const navigation = [
     { name: "Geschichte erstellen", href: "/story-generator" },
+    ...(user ? [{ name: "Meine Geschichten", href: "/my-stories" }] : []),
+  ]
+
+  const storyCategories = [
     { name: "Alle Geschichten", href: "/stories" },
+    { name: "Abenteuer", href: "/kategorie/Abenteuer" },
+    { name: "Märchen", href: "/kategorie/Märchen" },
+    { name: "Lerngeschichte", href: "/kategorie/Lerngeschichte" },
+    { name: "Gute-Nacht-Geschichte", href: "/kategorie/Gute-Nacht-Geschichte" },
+    { name: "Freundschaftsgeschichte", href: "/kategorie/Freundschaftsgeschichte" },
+    { name: "Tiergeschichte", href: "/kategorie/Tiergeschichte" },
+    { name: "Traumreise", href: "/kategorie/Traumreise" },
   ]
 
   return (
@@ -50,6 +61,25 @@ export function Header({ className }: HeaderProps) {
               {item.name}
             </Link>
           ))}
+          
+          {/* Geschichten Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-sm font-medium px-3 py-2 h-auto">
+                Geschichten
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              {storyCategories.map((category) => (
+                <DropdownMenuItem key={category.name} asChild>
+                  <Link href={category.href}>
+                    {category.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
         {/* Desktop Actions */}
@@ -123,6 +153,21 @@ export function Header({ className }: HeaderProps) {
                     {item.name}
                   </Link>
                 ))}
+                
+                {/* Geschichten Section in Mobile */}
+                <div className="pt-2">
+                  <div className="text-sm font-medium text-muted-foreground py-2">Geschichten</div>
+                  {storyCategories.map((category) => (
+                    <Link
+                      key={category.name}
+                      href={category.href}
+                      className="text-sm font-medium transition-colors hover:text-primary py-2 pl-4 block"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
               </nav>
               
               <div className="flex flex-col space-y-2 pt-4 border-t">

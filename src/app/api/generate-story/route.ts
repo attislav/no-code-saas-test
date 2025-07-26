@@ -12,6 +12,7 @@ interface GenerateStoryRequest {
   ageGroup: string
   extraWishes: string
   storyType: string
+  readingTime: string
   authorId?: string | null
 }
 
@@ -23,17 +24,19 @@ export async function POST(request: NextRequest) {
       character: body.character?.substring(0, 50) + '...',
       ageGroup: body.ageGroup,
       storyType: body.storyType,
+      readingTime: body.readingTime,
       extraWishes: body.extraWishes?.substring(0, 50) + '...'
     })
     
-    if (!body.character || !body.ageGroup || !body.storyType) {
+    if (!body.character || !body.ageGroup || !body.storyType || !body.readingTime) {
       console.error('Missing required fields:', { 
         character: !!body.character, 
         ageGroup: !!body.ageGroup, 
-        storyType: !!body.storyType 
+        storyType: !!body.storyType,
+        readingTime: !!body.readingTime
       })
       return NextResponse.json(
-        { error: 'Charakter, Alter Zielgruppe und Art der Geschichte sind erforderlich' },
+        { error: 'Charakter, Alter Zielgruppe, Art der Geschichte und Geschichtenlänge sind erforderlich' },
         { status: 400 }
       )
     }
@@ -69,6 +72,7 @@ export async function POST(request: NextRequest) {
       ageGroup: body.ageGroup,
       extraWishes: body.extraWishes || '',
       storyType: body.storyType,
+      readingTime: body.readingTime,
       timestamp: new Date().toISOString()
     }
 
